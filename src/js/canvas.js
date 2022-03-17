@@ -11,7 +11,7 @@ canvas.height = 400;
 const colors = ['#171717', '#70d9ff'];
 
 
-// Implementation
+// Global Variables
 let objects;
 let location;
 let question;
@@ -25,8 +25,7 @@ let locations = ["New York City, New York",
                     "Melbourne, Australia"];
 var possLocationsList = [];
 let options = ["t", "s", "b"];
-
-
+var inv;
 let wInventory = {
   "Diamonds": 0,
   "Emeralds": 0,
@@ -34,12 +33,14 @@ let wInventory = {
   "Ghent Altarpiece PLACEHOLDER": true,
 };
 let bInventory = {
-  "Diamonds": 9,
+  "Diamonds": 5,
   "Emeralds": 0,
   "Rubies": 2,
   "Picasso PLACEHOLDER": true,
 };
+let selling = false;
 
+//Implementation
 function listLocations() {
   for (let i=0; i < locations.length; i++) {
     if (possLocationsList.length <= locations.length - 1) {
@@ -49,17 +50,21 @@ function listLocations() {
 }
 
 function getNewQuestion() {
-  if (choice == 't' && prevChoice != 's') {
+  if (choice == 't' && prevChoice != 's' && prevChoice != 'b') {
     prevChoice = 't';
     listLocations();
     options = ['n', 'h', 'd', 's', 'b', 'p', 'f', 'm'];
     return "Where would you like to travel?";
-  } else if (choice == 's' && prevChoice != 't') {
+  } else if (choice == 's' && prevChoice != 't' && prevChoice != 'b') {
     prevChoice = 's';
+    selling = true;
     options = ['d', 'e', 'r'];
     return "";
-  } else if (choice == 'b' && prevChoice != 't') {
-    return "What are you looking to buy?";
+  } else if (choice == 'b' && prevChoice != 't' && prevChoice != 's') {
+    prevChoice = 'b';
+    selling = false;
+    options = ['d', 'e', 'r'];
+    return "";
   }
   else return ""
 }
@@ -141,10 +146,50 @@ function getSelling(){
 }
 
 function getNumSelling(){
-    return choice;
+  console.log(typeof choice);
+    return parseInt(choice);
 }
 
-var inv;
+function getBuying(){
+  function range(item){
+    let maxAmount = 9;
+    let currAmount = item;
+    let allowed = maxAmount - currAmount;
+    let arr = Array.from(Array(allowed).keys());
+    arr.push(arr.length);
+    var strArr = arr.map(String);
+    return strArr;
+  }
+  switch(choice){
+    case 'd':
+      //console.log("buying diamonds");
+      options = range(bInventory["Diamonds"]);
+      prevChoice = 'Diamonds';
+      goodInput = false;
+      return "How many diamonds would you like to buy?";
+    case 'e':
+      //console.log("buying emeralds");
+      options = range(bInventory["Emeralds"]);
+      prevChoice = 'Emeralds';
+      goodInput = false;
+      return "How many emeralds would you like to buy?";
+    case 'r':
+      //console.log("buying rubies");
+      options = range(bInventory["Rubies"]);
+      prevChoice = 'Rubies';
+      goodInput = false;
+      return "How many rubies would you like to buy?";
+    default:
+      return "What are you looking to buy?";
+  }
+}
+
+function getNumBuying(){
+    return parseInt(choice);
+}
+
+
+
 function init() {
   const bg = new Background(canvas, colors);
   objects = [];
@@ -172,12 +217,26 @@ function animate() {
 
   if (goodInput == true && prevChoice == "s"){
     goodInput = false;
+    selling = true;
     question.question = getSelling();
   }
 
-  if (goodInput == true && (prevChoice == 'Diamonds' || prevChoice == 'Emeralds' || prevChoice == 'Rubies')) {
+  if (goodInput == true && selling == true && (prevChoice == 'Diamonds' || prevChoice == 'Emeralds' || prevChoice == 'Rubies')) {
     goodInput = false;
     inv.decrease(prevChoice, getNumSelling());
+    let currLoc = location.location;
+    resetLocation();
+    location.location = currLoc;
+  }
+
+  if (goodInput == true && prevChoice == 'b'){
+    goodInput = false;
+    question.question = getBuying();
+  }
+
+  if (goodInput == true && selling == false && (prevChoice == 'Diamonds' || prevChoice == 'Emeralds' || prevChoice == 'Rubies')) {
+    goodInput = false;
+    inv.increase(prevChoice, getNumBuying());
     let currLoc = location.location;
     resetLocation();
     location.location = currLoc;

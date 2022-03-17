@@ -197,6 +197,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _location__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./location */ "./src/js/location.js");
 /* harmony import */ var _question__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./question */ "./src/js/question.js");
 /* harmony import */ var _inventory__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./inventory */ "./src/js/inventory.js");
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
 
 
 
@@ -206,7 +208,7 @@ var canvas = document.querySelector('canvas');
 var c = canvas.getContext('2d');
 canvas.width = 600;
 canvas.height = 400;
-var colors = ['#171717', '#70d9ff']; // Implementation
+var colors = ['#171717', '#70d9ff']; // Global Variables
 
 var objects;
 var location;
@@ -214,6 +216,7 @@ var question;
 var locations = ["New York City, New York", "Hong Kong, China", "Dubai, United Arab Emirates", "San Francisco, California", "Berlin, Germany", "Paris, France", "Florence, Italy", "Melbourne, Australia"];
 var possLocationsList = [];
 var options = ["t", "s", "b"];
+var inv;
 var wInventory = {
   "Diamonds": 0,
   "Emeralds": 0,
@@ -221,11 +224,12 @@ var wInventory = {
   "Ghent Altarpiece PLACEHOLDER": true
 };
 var bInventory = {
-  "Diamonds": 9,
+  "Diamonds": 5,
   "Emeralds": 0,
   "Rubies": 2,
   "Picasso PLACEHOLDER": true
 };
+var selling = false; //Implementation
 
 function listLocations() {
   for (var i = 0; i < locations.length; i++) {
@@ -236,17 +240,21 @@ function listLocations() {
 }
 
 function getNewQuestion() {
-  if (choice == 't' && prevChoice != 's') {
+  if (choice == 't' && prevChoice != 's' && prevChoice != 'b') {
     prevChoice = 't';
     listLocations();
     options = ['n', 'h', 'd', 's', 'b', 'p', 'f', 'm'];
     return "Where would you like to travel?";
-  } else if (choice == 's' && prevChoice != 't') {
+  } else if (choice == 's' && prevChoice != 't' && prevChoice != 'b') {
     prevChoice = 's';
+    selling = true;
     options = ['d', 'e', 'r'];
     return "";
-  } else if (choice == 'b' && prevChoice != 't') {
-    return "What are you looking to buy?";
+  } else if (choice == 'b' && prevChoice != 't' && prevChoice != 's') {
+    prevChoice = 'b';
+    selling = false;
+    options = ['d', 'e', 'r'];
+    return "";
   } else return "";
 }
 
@@ -330,10 +338,51 @@ function getSelling() {
 }
 
 function getNumSelling() {
-  return choice;
+  console.log(_typeof(choice));
+  return parseInt(choice);
 }
 
-var inv;
+function getBuying() {
+  function range(item) {
+    var maxAmount = 9;
+    var currAmount = item;
+    var allowed = maxAmount - currAmount;
+    var arr = Array.from(Array(allowed).keys());
+    arr.push(arr.length);
+    var strArr = arr.map(String);
+    return strArr;
+  }
+
+  switch (choice) {
+    case 'd':
+      //console.log("buying diamonds");
+      options = range(bInventory["Diamonds"]);
+      prevChoice = 'Diamonds';
+      goodInput = false;
+      return "How many diamonds would you like to buy?";
+
+    case 'e':
+      //console.log("buying emeralds");
+      options = range(bInventory["Emeralds"]);
+      prevChoice = 'Emeralds';
+      goodInput = false;
+      return "How many emeralds would you like to buy?";
+
+    case 'r':
+      //console.log("buying rubies");
+      options = range(bInventory["Rubies"]);
+      prevChoice = 'Rubies';
+      goodInput = false;
+      return "How many rubies would you like to buy?";
+
+    default:
+      return "What are you looking to buy?";
+  }
+}
+
+function getNumBuying() {
+  return parseInt(choice);
+}
 
 function init() {
   var bg = new _background__WEBPACK_IMPORTED_MODULE_0__["default"](canvas, colors);
@@ -363,15 +412,29 @@ function animate() {
 
   if (goodInput == true && prevChoice == "s") {
     goodInput = false;
+    selling = true;
     question.question = getSelling();
   }
 
-  if (goodInput == true && (prevChoice == 'Diamonds' || prevChoice == 'Emeralds' || prevChoice == 'Rubies')) {
+  if (goodInput == true && selling == true && (prevChoice == 'Diamonds' || prevChoice == 'Emeralds' || prevChoice == 'Rubies')) {
     goodInput = false;
     inv.decrease(prevChoice, getNumSelling());
     var currLoc = location.location;
     resetLocation();
     location.location = currLoc;
+  }
+
+  if (goodInput == true && prevChoice == 'b') {
+    goodInput = false;
+    question.question = getBuying();
+  }
+
+  if (goodInput == true && selling == false && (prevChoice == 'Diamonds' || prevChoice == 'Emeralds' || prevChoice == 'Rubies')) {
+    goodInput = false;
+    inv.increase(prevChoice, getNumBuying());
+    var _currLoc = location.location;
+    resetLocation();
+    location.location = _currLoc;
   }
 
   objects.forEach(function (object) {
@@ -486,8 +549,8 @@ var Inventory = /*#__PURE__*/function () {
     }
   }, {
     key: "increase",
-    value: function increase() {
-      console.log('buying'); //this.bInventory['Diamonds'] += 1;
+    value: function increase(item, number) {
+      this.bInventory[item] += number;
     }
   }, {
     key: "decrease",

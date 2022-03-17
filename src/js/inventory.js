@@ -40,9 +40,8 @@ export default class Inventory{
         this.draw(c);
     }
 
-    increase(){
-        console.log('buying');
-        //this.bInventory['Diamonds'] += 1;
+    increase(item, number){
+        this.bInventory[item] += number;
     }
 
     decrease(item, number){
