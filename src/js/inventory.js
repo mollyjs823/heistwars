@@ -17,14 +17,22 @@ export default class Inventory{
         c.font = "12px Consolas";
         let i = 0;
         for (const [key, value] of Object.entries(this.wInventory)) {
+            if (value == true) {
+                c.fillText(`${key}`, this.warehouse.x, this.warehouse.y + 20 * i);
+            } else {
             c.fillText(`${key}: ${value}`, this.warehouse.x, this.warehouse.y + 20 * i);
             i++;
+            }
         };
         //Briefcase
         i = 0;
         for (const [key, value] of Object.entries(this.bInventory)) {
+            if (value == true) {
+                c.fillText(`${key}`, this.briefcase.x, this.briefcase.y + 20 * i);
+            } else {
             c.fillText(`${key}: ${value}`, this.briefcase.x, this.briefcase.y + 20 * i);
             i++;
+            }
         };
     }
 
@@ -33,7 +41,12 @@ export default class Inventory{
     }
 
     increase(){
-        this.inventory['Diamonds'] += 1;
+        console.log('buying');
+        //this.bInventory['Diamonds'] += 1;
+    }
+
+    decrease(){
+        console.log("selling");
     }
     
 }

@@ -28,14 +28,16 @@ let options = ["t", "s", "b"];
 
 
 let wInventory = {
-  "Diamonds": 0,
-  "Picasso": 0,
-  "Gold": 0,
+  "Diamonds": 9,
+  "Emeralds": 0,
+  "Rubies": 0,
+  "Ghent Altarpiece PLACEHOLDER": true,
 };
 let bInventory = {
   "Diamonds": 0,
-  "Picasso": 0,
-  "Gold": 0,
+  "Emeralds": 0,
+  "Rubies": 0,
+  "Picasso PLACEHOLDER": true,
 };
 
 function listLocations() {
@@ -47,13 +49,15 @@ function listLocations() {
 }
 
 function getNewQuestion() {
-  if (choice == 't') {
+  if (choice == 't' && prevChoice != 's') {
     prevChoice = 't';
     listLocations();
     options = ['n', 'h', 'd', 's', 'b', 'p', 'f', 'm'];
     return "Where would you like to travel?";
   } else if (choice == 's' && prevChoice != 't') {
-    return "What do you want to sell?";
+    prevChoice = 's';
+    options = ['d', 'e', 'r'];
+    return "";
   } else if (choice == 'b' && prevChoice != 't') {
     return "What are you looking to buy?";
   }
@@ -105,6 +109,30 @@ function getNewLocation() {
   else return location.location;
 }
 
+function getSelling(){
+  function range(item){
+    let arr = Array.from(Array(item).keys())
+    arr.push(arr.length);
+    return arr;
+  }
+  switch(choice){
+    case 'd':
+      console.log("selling diamonds");
+      options = range(wInventory["Diamonds"]);
+      return "How many diamonds would you like to sell?";
+    case 'e':
+      console.log("selling emeralds");
+      options = range(wInventory["Emeralds"]);
+      return "How many emeralds would you like to sell?";
+    case 'r':
+      console.log("selling rubies");
+      options = range(wInventory["Rubies"]);
+      return "How many rubies would you like to sell?";
+    default:
+      return "What do you want to sell?";
+  }
+}
+
 var inv;
 function init() {
   const bg = new Background(canvas, colors);
@@ -132,9 +160,10 @@ function animate() {
     location.location = getNewLocation();
   }
 
-  if(goodInput == true && choice == "s"){
-    inv.increase();
+  if(goodInput == true && prevChoice == "s"){
+    //inv.decrease();
     goodInput = false;
+    question.question = getSelling();
   }
 
   objects.forEach(object => {

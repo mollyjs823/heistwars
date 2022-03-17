@@ -215,14 +215,16 @@ var locations = ["New York City, New York", "Hong Kong, China", "Dubai, United A
 var possLocationsList = [];
 var options = ["t", "s", "b"];
 var wInventory = {
-  "Diamonds": 0,
-  "Picasso": 0,
-  "Gold": 0
+  "Diamonds": 9,
+  "Emeralds": 0,
+  "Rubies": 0,
+  "Ghent Altarpiece PLACEHOLDER": true
 };
 var bInventory = {
   "Diamonds": 0,
-  "Picasso": 0,
-  "Gold": 0
+  "Emeralds": 0,
+  "Rubies": 0,
+  "Picasso PLACEHOLDER": true
 };
 
 function listLocations() {
@@ -234,13 +236,15 @@ function listLocations() {
 }
 
 function getNewQuestion() {
-  if (choice == 't') {
+  if (choice == 't' && prevChoice != 's') {
     prevChoice = 't';
     listLocations();
     options = ['n', 'h', 'd', 's', 'b', 'p', 'f', 'm'];
     return "Where would you like to travel?";
   } else if (choice == 's' && prevChoice != 't') {
-    return "What do you want to sell?";
+    prevChoice = 's';
+    options = ['d', 'e', 'r'];
+    return "";
   } else if (choice == 'b' && prevChoice != 't') {
     return "What are you looking to buy?";
   } else return "";
@@ -290,6 +294,34 @@ function getNewLocation() {
   } else return location.location;
 }
 
+function getSelling() {
+  function range(item) {
+    var arr = Array.from(Array(item).keys());
+    arr.push(arr.length);
+    return arr;
+  }
+
+  switch (choice) {
+    case 'd':
+      console.log("selling diamonds");
+      options = range(wInventory["Diamonds"]);
+      return "How many diamonds would you like to sell?";
+
+    case 'e':
+      console.log("selling emeralds");
+      options = range(wInventory["Emeralds"]);
+      return "How many emeralds would you like to sell?";
+
+    case 'r':
+      console.log("selling rubies");
+      options = range(wInventory["Rubies"]);
+      return "How many rubies would you like to sell?";
+
+    default:
+      return "What do you want to sell?";
+  }
+}
+
 var inv;
 
 function init() {
@@ -319,9 +351,10 @@ function animate() {
     location.location = getNewLocation();
   }
 
-  if (goodInput == true && choice == "s") {
-    inv.increase();
+  if (goodInput == true && prevChoice == "s") {
+    //inv.decrease();
     goodInput = false;
+    question.question = getSelling();
   }
 
   objects.forEach(function (object) {
@@ -402,8 +435,12 @@ var Inventory = /*#__PURE__*/function () {
             key = _Object$entries$_i[0],
             value = _Object$entries$_i[1];
 
-        c.fillText("".concat(key, ": ").concat(value), this.warehouse.x, this.warehouse.y + 20 * i);
-        i++;
+        if (value == true) {
+          c.fillText("".concat(key), this.warehouse.x, this.warehouse.y + 20 * i);
+        } else {
+          c.fillText("".concat(key, ": ").concat(value), this.warehouse.x, this.warehouse.y + 20 * i);
+          i++;
+        }
       }
 
       ; //Briefcase
@@ -415,8 +452,12 @@ var Inventory = /*#__PURE__*/function () {
             _key = _Object$entries2$_i[0],
             _value = _Object$entries2$_i[1];
 
-        c.fillText("".concat(_key, ": ").concat(_value), this.briefcase.x, this.briefcase.y + 20 * i);
-        i++;
+        if (_value == true) {
+          c.fillText("".concat(_key), this.briefcase.x, this.briefcase.y + 20 * i);
+        } else {
+          c.fillText("".concat(_key, ": ").concat(_value), this.briefcase.x, this.briefcase.y + 20 * i);
+          i++;
+        }
       }
 
       ;
@@ -429,7 +470,12 @@ var Inventory = /*#__PURE__*/function () {
   }, {
     key: "increase",
     value: function increase() {
-      this.inventory['Diamonds'] += 1;
+      console.log('buying'); //this.bInventory['Diamonds'] += 1;
+    }
+  }, {
+    key: "decrease",
+    value: function decrease() {
+      console.log("selling");
     }
   }]);
 
