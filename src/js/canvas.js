@@ -1,104 +1,21 @@
 import utils from './utils'
+import Background from './background';
+import PossLocations from './possibleLocations';
+import Location from './location';
+import Question from './question';
 
 const canvas = document.querySelector('canvas');
 const c = canvas.getContext('2d');
-
 canvas.width = 600;
 canvas.height = 400;
-
-
 const colors = ['#171717', '#70d9ff'];
-
-// Event Listeners
-
-// Objects
-class Background {
-  constructor(color) {
-    this.x = 0;
-    this.y = 0;
-    this.width = canvas.width;
-    this.height = canvas.height;
-    this.color = color;
-  }
-
-  draw() {
-    c.beginPath()
-    c.rect(this.x, this.y, this.width, this.height);
-    c.fillStyle = this.color;
-    c.fill();
-    c.closePath();
-  }
-
-  update() {
-    this.draw();
-  }
-}
-
-class Location{
-  constructor(location) {
-    this.x = 50;
-    this.y = 50;
-    this.color = colors[1];
-    this.location = location;
-  }
-
-  draw() {
-    c.fillStyle = this.color;
-    c.font = "15px Consolas";
-    c.fillText(this.location, this.x, this.y);
-  }
-
-  update() {
-    this.draw();
-  }
-}
-
-class PossLocations{
-  constructor(locations) {
-    this.x = 50;
-    this.y = 130;
-    this.color = colors[1];
-    this.locations = locations;
-  }
-
-  draw() {
-    c.fillStyle = this.color;
-    c.font = "10px Consolas";
-    for (let i=0; i < this.locations.length; i++){
-      c.fillText(this.locations[i], this.x, this.y + (i * 10));
-    }
-  }
-
-  update() {
-    this.draw();
-  }
-}
-
-class Question {
-  constructor(question) {
-    this.x = 50;
-    this.y = 100;
-    this.color = colors[1];
-    this.question = question;
-  }
-
-  draw() {
-    c.fillStyle = this.color;
-    c.font = "20px Consolas";
-    c.fillText(this.question, this.x, this.y);
-  }
-
-  update() {
-    this.draw();
-  }
-}
-
 
 
 // Implementation
 let objects;
-let question = new Question("What would you like to do?");
-const locations = ["New York City, New York", 
+let location;
+let question;
+let locations = ["New York City, New York", 
                     "Hong Kong, China", 
                     "Dubai, United Arab Emirates", 
                     "San Francisco, California", 
@@ -107,9 +24,7 @@ const locations = ["New York City, New York",
                     "Florence, Italy",
                     "Melbourne, Australia"];
 var possLocationsList = [];
-const options = ["t", "s", "b"];
-const travelOptions = ['n', 'h', 'd', 's', 'b', 'p', 'f', 'm'];
-
+let options = ["t", "s", "b"];
 
 function listLocations() {
   for (let i=0; i < locations.length; i++) {
@@ -121,26 +36,75 @@ function listLocations() {
 
 function getNewQuestion() {
   if (choice == 't') {
+    prevChoice = 't';
     listLocations();
+    options = ['n', 'h', 'd', 's', 'b', 'p', 'f', 'm'];
     return "Where would you like to travel?";
-  } else if (choice == 's') {
+  } else if (choice == 's' && prevChoice != 't') {
     return "What do you want to sell?";
-  } else if (choice == 'b') {
+  } else if (choice == 'b' && prevChoice != 't') {
     return "What are you looking to buy?";
   }
+  else return ""
+}
+
+function atNewLocation(){
+  choice = "";
+  prevChoice = "";
+  goodInput = false;
+  options = ["t", "s", "b"]
+  init();
+}
+
+function getNewLocation() {
+  if (choice == 'n' && prevChoice == 't') {
+    atNewLocation();
+    location.location = locations[0];
+    return location.location;
+  } else if (choice == 'h' && prevChoice == 't') {
+    atNewLocation();
+    location.location = locations[1];
+    return location.location;
+  } else if (choice == 'd' && prevChoice == 't') {
+    atNewLocation();
+    location.location = locations[2];
+    return location.location;
+  } else if (choice == 's' && prevChoice == 't') {
+    atNewLocation();
+    location.location = locations[3];
+    return location.location;
+  } else if (choice == 'b' && prevChoice == 't') {
+    atNewLocation();
+    location.location = locations[4];
+    return location.location;
+  } else if (choice == 'p' && prevChoice == 't') {
+    atNewLocation();
+    location.location = locations[5];
+    return location.location;
+  } else if (choice == 'f' && prevChoice == 't') {
+    atNewLocation();
+    location.location = locations[6];
+    return location.location;
+  } else if (choice == 'm' && prevChoice == 't') {
+    atNewLocation();
+    location.location = locations[7];
+    return location.location;
+  }
+  else return location.location;
 }
 
 
 function init() {
   objects = [];
-  
-  var location = new Location(locations[Math.floor(Math.random() * locations.length)]);
-  var possLocations = new PossLocations(possLocationsList);
-  const bg = new Background(colors[0]);
+  location = new Location(colors, locations[Math.floor(Math.random() * locations.length)]);
+  question = new Question(colors, "What would you like to do?");
+  var possLocations = new PossLocations(colors, possLocationsList);
+  const bg = new Background(canvas, colors[0]);
   objects.push(bg);
   objects.push(location);
   objects.push(question);
-  objects.push(possLocations);
+  console.log(choice);
+  objects.push(possLocations);  
 }
 
 
@@ -151,28 +115,26 @@ function animate() {
   
   if (goodInput == true) {
     question.question = getNewQuestion();
+    location.location = getNewLocation();
   }
 
   objects.forEach(object => {
-    object.update();
+    object.update(c, choice);
   })
 }
+
+var goodInput = false;
+var choice = "";
+var prevChoice = "";
 
 init();
 animate();
 
-function getOverallInput(e){
-  if (options.includes(e.key)){
-  goodInput = true;
-  choice = e.key;
-  document.addEventListener('keyup', (e) => {
-    console.log("correct");
-  });
-}}
 
-var goodInput = false;
-var choice = ""
-document.addEventListener('keyup', getOverallInput(e));
-  //   if (choice == 't' && travelOptions.includes(e.key)){
-  //     console.log("Going there");
-  //   }
+//User input check
+document.addEventListener('keyup', (e) => {
+  if (options.includes(e.key)){
+    goodInput = true;
+    choice = e.key;
+  }
+});
