@@ -103,14 +103,14 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
 var Background = /*#__PURE__*/function () {
-  function Background(canvas, color) {
+  function Background(canvas, colors) {
     _classCallCheck(this, Background);
 
     this.x = 0;
     this.y = 0;
     this.width = canvas.width;
     this.height = canvas.height;
-    this.color = color;
+    this.colors = colors;
   }
 
   _createClass(Background, [{
@@ -118,9 +118,32 @@ var Background = /*#__PURE__*/function () {
     value: function draw(c) {
       c.beginPath();
       c.rect(this.x, this.y, this.width, this.height);
-      c.fillStyle = this.color;
+      c.fillStyle = this.colors[0];
       c.fill();
       c.closePath();
+      var wUnit = (this.width - 30) / 6;
+      var hUnit = 40;
+      c.strokeStyle = this.colors[1];
+      c.lineWidth = 3;
+      c.beginPath();
+      c.strokeRect(this.x + 15, 30, wUnit * 2, hUnit);
+      c.closePath();
+      c.beginPath();
+      c.strokeRect(this.x + 15 + wUnit * 2, 30, wUnit * 2, hUnit);
+      c.closePath();
+      c.beginPath();
+      c.strokeRect(this.x + 15 + wUnit * 4, 30, wUnit * 2, hUnit);
+      c.closePath();
+      c.beginPath();
+      c.strokeRect(this.x + 15, 30 + hUnit, wUnit * 3, 150);
+      c.closePath();
+      c.beginPath();
+      c.strokeRect(this.x + 15 + wUnit * 3, 30 + hUnit, wUnit * 3, 150);
+      c.closePath();
+      c.fillStyle = this.colors[1];
+      c.font = "12px Consolas";
+      c.fillText("Warehouse", this.x + 25, 53);
+      c.fillText("Briefcase", this.x + 25 + wUnit * 4, 53);
     }
   }, {
     key: "update",
@@ -236,10 +259,10 @@ function getNewLocation() {
 
 function init() {
   objects = [];
-  location = new _location__WEBPACK_IMPORTED_MODULE_3__["default"](colors, locations[Math.floor(Math.random() * locations.length)]);
-  question = new _question__WEBPACK_IMPORTED_MODULE_4__["default"](colors, "What would you like to do?");
+  location = new _location__WEBPACK_IMPORTED_MODULE_3__["default"](canvas, colors, locations[Math.floor(Math.random() * locations.length)]);
+  question = new _question__WEBPACK_IMPORTED_MODULE_4__["default"](colors, "What would you like to do? (Buy, Sell, Travel)");
   var possLocations = new _possibleLocations__WEBPACK_IMPORTED_MODULE_2__["default"](colors, possLocationsList);
-  var bg = new _background__WEBPACK_IMPORTED_MODULE_1__["default"](canvas, colors[0]);
+  var bg = new _background__WEBPACK_IMPORTED_MODULE_1__["default"](canvas, colors);
   objects.push(bg);
   objects.push(location);
   objects.push(question);
@@ -296,20 +319,20 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
 var Location = /*#__PURE__*/function () {
-  function Location(colors, location) {
+  function Location(canvas, colors, location) {
     _classCallCheck(this, Location);
 
-    this.x = 50;
-    this.y = 50;
     this.color = colors[1];
     this.location = location;
+    this.x = (canvas.width - 13) / 6 * 2 + 18;
+    this.y = 53;
   }
 
   _createClass(Location, [{
     key: "draw",
     value: function draw(c) {
       c.fillStyle = this.color;
-      c.font = "15px Consolas";
+      c.font = "11px Consolas";
       c.fillText(this.location, this.x, this.y);
     }
   }, {
@@ -398,8 +421,8 @@ var Question = /*#__PURE__*/function () {
   function Question(colors, question) {
     _classCallCheck(this, Question);
 
-    this.x = 50;
-    this.y = 100;
+    this.x = 15;
+    this.y = 250;
     this.color = colors[1];
     this.question = question;
   }
@@ -408,7 +431,7 @@ var Question = /*#__PURE__*/function () {
     key: "draw",
     value: function draw(c) {
       c.fillStyle = this.color;
-      c.font = "20px Consolas";
+      c.font = "15px Consolas";
       c.fillText(this.question, this.x, this.y);
     }
   }, {

@@ -96,10 +96,10 @@ function getNewLocation() {
 
 function init() {
   objects = [];
-  location = new Location(colors, locations[Math.floor(Math.random() * locations.length)]);
-  question = new Question(colors, "What would you like to do?");
+  location = new Location(canvas, colors, locations[Math.floor(Math.random() * locations.length)]);
+  question = new Question(colors, "What would you like to do? (Buy, Sell, Travel)");
   var possLocations = new PossLocations(colors, possLocationsList);
-  const bg = new Background(canvas, colors[0]);
+  const bg = new Background(canvas, colors);
   objects.push(bg);
   objects.push(location);
   objects.push(question);
