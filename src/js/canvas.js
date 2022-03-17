@@ -28,15 +28,15 @@ let options = ["t", "s", "b"];
 
 
 let wInventory = {
-  "Diamonds": 9,
+  "Diamonds": 0,
   "Emeralds": 0,
   "Rubies": 0,
   "Ghent Altarpiece PLACEHOLDER": true,
 };
 let bInventory = {
-  "Diamonds": 0,
+  "Diamonds": 9,
   "Emeralds": 0,
-  "Rubies": 0,
+  "Rubies": 2,
   "Picasso PLACEHOLDER": true,
 };
 
@@ -64,7 +64,7 @@ function getNewQuestion() {
   else return ""
 }
 
-function atNewLocation(){
+function resetLocation(){
   choice = "";
   prevChoice = "";
   goodInput = false;
@@ -74,35 +74,35 @@ function atNewLocation(){
 
 function getNewLocation() {
   if (choice == 'n' && prevChoice == 't') {
-    atNewLocation();
+    resetLocation();
     location.location = locations[0];
     return location.location;
   } else if (choice == 'h' && prevChoice == 't') {
-    atNewLocation();
+    resetLocation();
     location.location = locations[1];
     return location.location;
   } else if (choice == 'd' && prevChoice == 't') {
-    atNewLocation();
+    resetLocation();
     location.location = locations[2];
     return location.location;
   } else if (choice == 's' && prevChoice == 't') {
-    atNewLocation();
+    resetLocation();
     location.location = locations[3];
     return location.location;
   } else if (choice == 'b' && prevChoice == 't') {
-    atNewLocation();
+    resetLocation();
     location.location = locations[4];
     return location.location;
   } else if (choice == 'p' && prevChoice == 't') {
-    atNewLocation();
+    resetLocation();
     location.location = locations[5];
     return location.location;
   } else if (choice == 'f' && prevChoice == 't') {
-    atNewLocation();
+    resetLocation();
     location.location = locations[6];
     return location.location;
   } else if (choice == 'm' && prevChoice == 't') {
-    atNewLocation();
+    resetLocation();
     location.location = locations[7];
     return location.location;
   }
@@ -113,24 +113,35 @@ function getSelling(){
   function range(item){
     let arr = Array.from(Array(item).keys())
     arr.push(arr.length);
-    return arr;
+    var strArr = arr.map(String);
+    return strArr;
   }
   switch(choice){
     case 'd':
-      console.log("selling diamonds");
-      options = range(wInventory["Diamonds"]);
+      //console.log("selling diamonds");
+      options = range(bInventory["Diamonds"]);
+      prevChoice = 'Diamonds';
+      goodInput = false;
       return "How many diamonds would you like to sell?";
     case 'e':
-      console.log("selling emeralds");
-      options = range(wInventory["Emeralds"]);
+      //console.log("selling emeralds");
+      options = range(bInventory["Emeralds"]);
+      prevChoice = 'Emeralds';
+      goodInput = false;
       return "How many emeralds would you like to sell?";
     case 'r':
-      console.log("selling rubies");
-      options = range(wInventory["Rubies"]);
+      //console.log("selling rubies");
+      options = range(bInventory["Rubies"]);
+      prevChoice = 'Rubies';
+      goodInput = false;
       return "How many rubies would you like to sell?";
     default:
       return "What do you want to sell?";
   }
+}
+
+function getNumSelling(){
+    return choice;
 }
 
 var inv;
@@ -144,7 +155,6 @@ function init() {
   objects.push(bg);
   objects.push(location);
   objects.push(question);
-  console.log(choice);
   objects.push(possLocations);  
   objects.push(inv);
 }
@@ -160,10 +170,17 @@ function animate() {
     location.location = getNewLocation();
   }
 
-  if(goodInput == true && prevChoice == "s"){
-    //inv.decrease();
+  if (goodInput == true && prevChoice == "s"){
     goodInput = false;
     question.question = getSelling();
+  }
+
+  if (goodInput == true && (prevChoice == 'Diamonds' || prevChoice == 'Emeralds' || prevChoice == 'Rubies')) {
+    goodInput = false;
+    inv.decrease(prevChoice, getNumSelling());
+    let currLoc = location.location;
+    resetLocation();
+    location.location = currLoc;
   }
 
   objects.forEach(object => {

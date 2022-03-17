@@ -45,8 +45,8 @@ export default class Inventory{
         //this.bInventory['Diamonds'] += 1;
     }
 
-    decrease(){
-        console.log("selling");
+    decrease(item, number){
+        this.bInventory[item] -= number;
     }
     
 }
