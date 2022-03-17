@@ -1,7 +1,7 @@
 export default class PossLocations{
     constructor(colors, locations) {
-      this.x = 50;
-      this.y = 130;
+      this.x = 15;
+      this.y = 270;
       this.color = colors[1];
       this.locations = locations;
     }

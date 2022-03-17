@@ -159,6 +159,30 @@ var Background = /*#__PURE__*/function () {
 
 /***/ }),
 
+/***/ "./src/js/briefcaseInventory.js":
+/*!**************************************!*\
+  !*** ./src/js/briefcaseInventory.js ***!
+  \**************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return getBriefcaseInv; });
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var getBriefcaseInv = function getBriefcaseInv(inventory) {
+  _classCallCheck(this, getBriefcaseInv);
+
+  this.inventory = inventory;
+  this.x = 315;
+  this.y = 90;
+};
+
+
+
+/***/ }),
+
 /***/ "./src/js/canvas.js":
 /*!**************************!*\
   !*** ./src/js/canvas.js ***!
@@ -168,12 +192,11 @@ var Background = /*#__PURE__*/function () {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./utils */ "./src/js/utils.js");
-/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_utils__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _background__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./background */ "./src/js/background.js");
-/* harmony import */ var _possibleLocations__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./possibleLocations */ "./src/js/possibleLocations.js");
-/* harmony import */ var _location__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./location */ "./src/js/location.js");
-/* harmony import */ var _question__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./question */ "./src/js/question.js");
+/* harmony import */ var _background__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./background */ "./src/js/background.js");
+/* harmony import */ var _possibleLocations__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./possibleLocations */ "./src/js/possibleLocations.js");
+/* harmony import */ var _location__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./location */ "./src/js/location.js");
+/* harmony import */ var _question__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./question */ "./src/js/question.js");
+/* harmony import */ var _inventory__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./inventory */ "./src/js/inventory.js");
 
 
 
@@ -191,6 +214,16 @@ var question;
 var locations = ["New York City, New York", "Hong Kong, China", "Dubai, United Arab Emirates", "San Francisco, California", "Berlin, Germany", "Paris, France", "Florence, Italy", "Melbourne, Australia"];
 var possLocationsList = [];
 var options = ["t", "s", "b"];
+var wInventory = {
+  "Diamonds": 0,
+  "Picasso": 0,
+  "Gold": 0
+};
+var bInventory = {
+  "Diamonds": 0,
+  "Picasso": 0,
+  "Gold": 0
+};
 
 function listLocations() {
   for (var i = 0; i < locations.length; i++) {
@@ -257,17 +290,21 @@ function getNewLocation() {
   } else return location.location;
 }
 
+var inv;
+
 function init() {
+  var bg = new _background__WEBPACK_IMPORTED_MODULE_0__["default"](canvas, colors);
   objects = [];
-  location = new _location__WEBPACK_IMPORTED_MODULE_3__["default"](canvas, colors, locations[Math.floor(Math.random() * locations.length)]);
-  question = new _question__WEBPACK_IMPORTED_MODULE_4__["default"](colors, "What would you like to do? (Buy, Sell, Travel)");
-  var possLocations = new _possibleLocations__WEBPACK_IMPORTED_MODULE_2__["default"](colors, possLocationsList);
-  var bg = new _background__WEBPACK_IMPORTED_MODULE_1__["default"](canvas, colors);
+  location = new _location__WEBPACK_IMPORTED_MODULE_2__["default"](canvas, colors, locations[Math.floor(Math.random() * locations.length)]);
+  question = new _question__WEBPACK_IMPORTED_MODULE_3__["default"](colors, "What would you like to do? (Buy, Sell, Travel)");
+  var possLocations = new _possibleLocations__WEBPACK_IMPORTED_MODULE_1__["default"](colors, possLocationsList);
+  inv = new _inventory__WEBPACK_IMPORTED_MODULE_4__["default"](canvas, wInventory, bInventory, colors);
   objects.push(bg);
   objects.push(location);
   objects.push(question);
   console.log(choice);
   objects.push(possLocations);
+  objects.push(inv);
 } // Animation Loop
 
 
@@ -280,6 +317,11 @@ function animate() {
   if (goodInput == true) {
     question.question = getNewQuestion();
     location.location = getNewLocation();
+  }
+
+  if (goodInput == true && choice == "s") {
+    inv.increase();
+    goodInput = false;
   }
 
   objects.forEach(function (object) {
@@ -299,6 +341,102 @@ document.addEventListener('keyup', function (e) {
     choice = e.key;
   }
 });
+
+/***/ }),
+
+/***/ "./src/js/inventory.js":
+/*!*****************************!*\
+  !*** ./src/js/inventory.js ***!
+  \*****************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Inventory; });
+/* harmony import */ var _warehouseInventory__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./warehouseInventory */ "./src/js/warehouseInventory.js");
+/* harmony import */ var _briefcaseInventory__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./briefcaseInventory */ "./src/js/briefcaseInventory.js");
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
+
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(n); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+function _iterableToArrayLimit(arr, i) { if (typeof Symbol === "undefined" || !(Symbol.iterator in Object(arr))) return; var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+
+
+
+var Inventory = /*#__PURE__*/function () {
+  function Inventory(canvas, wInventory, bInventory, colors) {
+    _classCallCheck(this, Inventory);
+
+    this.canvas = canvas;
+    this.warehouse = new _warehouseInventory__WEBPACK_IMPORTED_MODULE_0__["default"](wInventory);
+    this.wInventory = this.warehouse.inventory;
+    this.briefcase = new _briefcaseInventory__WEBPACK_IMPORTED_MODULE_1__["default"](bInventory);
+    this.bInventory = this.briefcase.inventory;
+    this.color = colors[1];
+  }
+
+  _createClass(Inventory, [{
+    key: "draw",
+    value: function draw(c) {
+      //Warehouse
+      c.fillStyle = this.color;
+      c.font = "12px Consolas";
+      var i = 0;
+
+      for (var _i = 0, _Object$entries = Object.entries(this.wInventory); _i < _Object$entries.length; _i++) {
+        var _Object$entries$_i = _slicedToArray(_Object$entries[_i], 2),
+            key = _Object$entries$_i[0],
+            value = _Object$entries$_i[1];
+
+        c.fillText("".concat(key, ": ").concat(value), this.warehouse.x, this.warehouse.y + 20 * i);
+        i++;
+      }
+
+      ; //Briefcase
+
+      i = 0;
+
+      for (var _i2 = 0, _Object$entries2 = Object.entries(this.bInventory); _i2 < _Object$entries2.length; _i2++) {
+        var _Object$entries2$_i = _slicedToArray(_Object$entries2[_i2], 2),
+            _key = _Object$entries2$_i[0],
+            _value = _Object$entries2$_i[1];
+
+        c.fillText("".concat(_key, ": ").concat(_value), this.briefcase.x, this.briefcase.y + 20 * i);
+        i++;
+      }
+
+      ;
+    }
+  }, {
+    key: "update",
+    value: function update(c, choice) {
+      this.draw(c);
+    }
+  }, {
+    key: "increase",
+    value: function increase() {
+      this.inventory['Diamonds'] += 1;
+    }
+  }]);
+
+  return Inventory;
+}();
+
+
 
 /***/ }),
 
@@ -369,8 +507,8 @@ var PossLocations = /*#__PURE__*/function () {
   function PossLocations(colors, locations) {
     _classCallCheck(this, PossLocations);
 
-    this.x = 50;
-    this.y = 130;
+    this.x = 15;
+    this.y = 270;
     this.color = colors[1];
     this.locations = locations;
   }
@@ -431,7 +569,7 @@ var Question = /*#__PURE__*/function () {
     key: "draw",
     value: function draw(c) {
       c.fillStyle = this.color;
-      c.font = "15px Consolas";
+      c.font = "12px Consolas";
       c.fillText(this.question, this.x, this.y);
     }
   }, {
@@ -448,32 +586,27 @@ var Question = /*#__PURE__*/function () {
 
 /***/ }),
 
-/***/ "./src/js/utils.js":
-/*!*************************!*\
-  !*** ./src/js/utils.js ***!
-  \*************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
+/***/ "./src/js/warehouseInventory.js":
+/*!**************************************!*\
+  !*** ./src/js/warehouseInventory.js ***!
+  \**************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
-function randomIntFromRange(min, max) {
-  return Math.floor(Math.random() * (max - min + 1) + min);
-}
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return getWarehouseInv; });
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function randomColor(colors) {
-  return colors[Math.floor(Math.random() * colors.length)];
-}
+var getWarehouseInv = function getWarehouseInv(inventory) {
+  _classCallCheck(this, getWarehouseInv);
 
-function distance(x1, y1, x2, y2) {
-  var xDist = x2 - x1;
-  var yDist = y2 - y1;
-  return Math.sqrt(Math.pow(xDist, 2) + Math.pow(yDist, 2));
-}
-
-module.exports = {
-  randomIntFromRange: randomIntFromRange,
-  randomColor: randomColor,
-  distance: distance
+  this.inventory = inventory;
+  this.x = 25;
+  this.y = 90;
 };
+
+
 
 /***/ })
 

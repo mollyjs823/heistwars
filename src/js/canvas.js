@@ -1,8 +1,8 @@
-import utils from './utils'
 import Background from './background';
 import PossLocations from './possibleLocations';
 import Location from './location';
 import Question from './question';
+import Inventory from './inventory';
 
 const canvas = document.querySelector('canvas');
 const c = canvas.getContext('2d');
@@ -25,6 +25,18 @@ let locations = ["New York City, New York",
                     "Melbourne, Australia"];
 var possLocationsList = [];
 let options = ["t", "s", "b"];
+
+
+let wInventory = {
+  "Diamonds": 0,
+  "Picasso": 0,
+  "Gold": 0,
+};
+let bInventory = {
+  "Diamonds": 0,
+  "Picasso": 0,
+  "Gold": 0,
+};
 
 function listLocations() {
   for (let i=0; i < locations.length; i++) {
@@ -93,18 +105,20 @@ function getNewLocation() {
   else return location.location;
 }
 
-
+var inv;
 function init() {
+  const bg = new Background(canvas, colors);
   objects = [];
   location = new Location(canvas, colors, locations[Math.floor(Math.random() * locations.length)]);
   question = new Question(colors, "What would you like to do? (Buy, Sell, Travel)");
   var possLocations = new PossLocations(colors, possLocationsList);
-  const bg = new Background(canvas, colors);
+  inv = new Inventory(canvas, wInventory, bInventory, colors);
   objects.push(bg);
   objects.push(location);
   objects.push(question);
   console.log(choice);
   objects.push(possLocations);  
+  objects.push(inv);
 }
 
 
@@ -116,6 +130,11 @@ function animate() {
   if (goodInput == true) {
     question.question = getNewQuestion();
     location.location = getNewLocation();
+  }
+
+  if(goodInput == true && choice == "s"){
+    inv.increase();
+    goodInput = false;
   }
 
   objects.forEach(object => {

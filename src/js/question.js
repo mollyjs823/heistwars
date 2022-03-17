@@ -8,7 +8,7 @@ export default class Question {
   
     draw(c) {
       c.fillStyle = this.color;
-      c.font = "15px Consolas";
+      c.font = "12px Consolas";
       c.fillText(this.question, this.x, this.y);
     }
   
