@@ -1,6 +1,6 @@
 export default class Location{
     constructor(canvas, colors, location) {
-      this.color = colors[1];
+      this.color = colors['text'];
       this.location = location;
       this.x = (canvas.width - 13) / 6 * 2 + 18;
       this.y = 53;

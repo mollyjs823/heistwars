@@ -6,17 +6,21 @@ import Inventory from './inventory';
 import Money from './money';
 import Values from './values';
 
+//Canvas variables
 const canvas = document.querySelector('canvas');
 const c = canvas.getContext('2d');
 canvas.width = 600;
 canvas.height = 400;
-const colors = ['#171717', '#70d9ff'];
+const colors = {'bg': '#171717', 'text': '#70d9ff'};
 
 
 // Global Variables
 let objects;
-let location;
 let question;
+let inv;
+let money;
+let currValues;
+let location;
 let locations = ["New York City, New York", 
                     "Hong Kong, China", 
                     "Dubai, United Arab Emirates", 
@@ -25,22 +29,24 @@ let locations = ["New York City, New York",
                     "Paris, France", 
                     "Florence, Italy",
                     "Melbourne, Australia"];
+//Listed to screen as possibilities
 var possLocationsList = [];
+//Initial options: travel, sell, buy; change throughout game
 let options = ["t", "s", "b"];
-var inv;
-var money;
-var currValues;
+//Warehouse inv
 let wInventory = {
   "Diamonds": 0,
   "Emeralds": 0,
   "Rubies": 0,
 };
+//Briefcase inv
 let bInventory = {
   "Diamonds": 5,
   "Emeralds": 0,
   "Rubies": 2,
   //"Rockefeller Emerald": true,
 };
+//Determine if selling or buying
 let selling = false;
 let startMoney = {
   'cash': 0,
@@ -48,8 +54,10 @@ let startMoney = {
   'debt': 5000,
 } 
 
-//Implementation
+//IMPLEMENTATION
+
 function listLocations() {
+  //Populates possible locations list from all locations
   for (let i=0; i < locations.length; i++) {
     if (possLocationsList.length <= locations.length - 1) {
       possLocationsList.push(locations[i]);
@@ -58,6 +66,7 @@ function listLocations() {
 }
 
 function getNewQuestion() {
+  //Get question to display on screen, set options
   if (choice == 't' && prevChoice != 's' && prevChoice != 'b') {
     prevChoice = 't';
     listLocations();
@@ -78,6 +87,7 @@ function getNewQuestion() {
 }
 
 function resetLocation(){
+  //Called when travel and after selling/buying
   choice = "";
   prevChoice = "";
   goodInput = false;
@@ -92,6 +102,7 @@ function resetLocation(){
 }
 
 function getNewLocation() {
+  //Set new location from user choice when traveling
   if (choice == 'n' && prevChoice == 't') {
     resetLocation();
     location.location = locations[0];
@@ -129,6 +140,7 @@ function getNewLocation() {
 }
 
 function getSelling(){
+  //Determine options from inv, return new question
   function range(item){
     let arr = Array.from(Array(item).keys())
     arr.push(arr.length);
@@ -137,19 +149,16 @@ function getSelling(){
   }
   switch(choice){
     case 'd':
-      //console.log("selling diamonds");
       options = range(bInventory["Diamonds"]);
       prevChoice = 'Diamonds';
       goodInput = false;
       return "How many diamonds would you like to sell?";
     case 'e':
-      //console.log("selling emeralds");
       options = range(bInventory["Emeralds"]);
       prevChoice = 'Emeralds';
       goodInput = false;
       return "How many emeralds would you like to sell?";
     case 'r':
-      //console.log("selling rubies");
       options = range(bInventory["Rubies"]);
       prevChoice = 'Rubies';
       goodInput = false;
@@ -160,10 +169,12 @@ function getSelling(){
 }
 
 function getNumSelling(){
+  //Convert user input to number
     return parseInt(choice);
 }
 
 function getBuying(){
+  //Determine options from max possible and current amount, return new question
   function range(item){
     let maxAmount = 9;
     let currAmount = item;
@@ -198,20 +209,23 @@ function getBuying(){
 }
 
 function getNumBuying(){
+  //Convert user input to number
     return parseInt(choice);
 }
 
 
 
 function init() {
+  //Called in beginning and every time location reset @ resetLocation()
   const bg = new Background(canvas, colors);
-  objects = [];
   location = new Location(canvas, colors, locations[Math.floor(Math.random() * locations.length)]);
   question = new Question(colors, "What would you like to do? (Buy, Sell, Travel)");
   var possLocations = new PossLocations(colors, possLocationsList);
   inv = new Inventory(wInventory, bInventory, colors);
   money = new Money(colors, startMoney);
   currValues = new Values(location.location, colors);
+
+  objects = [];
   objects.push(bg);
   objects.push(location);
   objects.push(question);
@@ -222,9 +236,9 @@ function init() {
 }
 
 
-// Animation Loop
+// ANIMATION LOOP
 function animate() {
-  setTimeout(() => {requestAnimationFrame(animate)}, 500);
+  setTimeout(() => {requestAnimationFrame(animate)}, 100);
   c.clearRect(0, 0, canvas.width, canvas.height);
   currValues.currLocation = location.location;
   
@@ -233,7 +247,7 @@ function animate() {
     location.location = getNewLocation();
   }
 
-  //SELLING
+  //Selling
   if (goodInput == true && prevChoice == "s"){
     goodInput = false;
     selling = true;
@@ -247,7 +261,7 @@ function animate() {
     location.location = currLoc;
   }
 
-  //BUYING
+  //Buying
   if (goodInput == true && prevChoice == 'b'){
     goodInput = false;
     question.question = getBuying();
@@ -255,7 +269,7 @@ function animate() {
   if (goodInput == true && selling == false && (prevChoice == 'Diamonds' || prevChoice == 'Emeralds' || prevChoice == 'Rubies')) {
     goodInput = false;
     // if (cash.cash >= currValues.locations[location.location][prevChoice]){
-    //   console.log('ENough money');
+    //   console.log('Enough money');
     // }
     inv.increase(prevChoice, getNumBuying());
     let currLoc = location.location;
@@ -268,6 +282,7 @@ function animate() {
   })
 }
 
+//Initialize user input
 var goodInput = false;
 var choice = "";
 var prevChoice = "";
@@ -275,11 +290,10 @@ var prevChoice = "";
 init();
 animate();
 
-
 //User input check
 document.addEventListener('keyup', (e) => {
   if (options.includes(e.key)){
-    goodInput = true;
     choice = e.key;
-  }
-});
+    goodInput = true;
+    }
+  });

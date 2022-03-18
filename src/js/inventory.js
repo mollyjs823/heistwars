@@ -7,7 +7,7 @@ export default class Inventory{
         this.wInventory = this.warehouse.inventory;
         this.briefcase = new getBriefcaseInv(bInventory);
         this.bInventory = this.briefcase.inventory;
-        this.color = colors[1];
+        this.color = colors['text'];
     }
 
     draw(c){

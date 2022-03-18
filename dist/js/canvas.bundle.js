@@ -118,12 +118,12 @@ var Background = /*#__PURE__*/function () {
     value: function draw(c) {
       c.beginPath();
       c.rect(this.x, this.y, this.width, this.height);
-      c.fillStyle = this.colors[0];
+      c.fillStyle = this.colors['bg'];
       c.fill();
       c.closePath();
       var wUnit = (this.width - 30) / 6;
       var hUnit = 40;
-      c.strokeStyle = this.colors[1];
+      c.strokeStyle = this.colors['text'];
       c.lineWidth = 3;
       c.beginPath();
       c.strokeRect(this.x + 15, 30, wUnit * 2, hUnit);
@@ -140,7 +140,7 @@ var Background = /*#__PURE__*/function () {
       c.beginPath();
       c.strokeRect(this.x + 15 + wUnit * 3, 30 + hUnit, wUnit * 3, 150);
       c.closePath();
-      c.fillStyle = this.colors[1];
+      c.fillStyle = this.colors['text'];
       c.font = "12px Consolas";
       c.fillText("Warehouse", this.x + 25, 53);
       c.fillText("Briefcase", this.x + 25 + wUnit * 4, 53);
@@ -205,41 +205,51 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+ //Canvas variables
 
 var canvas = document.querySelector('canvas');
 var c = canvas.getContext('2d');
 canvas.width = 600;
 canvas.height = 400;
-var colors = ['#171717', '#70d9ff']; // Global Variables
+var colors = {
+  'bg': '#171717',
+  'text': '#70d9ff'
+}; // Global Variables
 
 var objects;
-var location;
 var question;
-var locations = ["New York City, New York", "Hong Kong, China", "Dubai, United Arab Emirates", "San Francisco, California", "Berlin, Germany", "Paris, France", "Florence, Italy", "Melbourne, Australia"];
-var possLocationsList = [];
-var options = ["t", "s", "b"];
 var inv;
 var money;
 var currValues;
+var location;
+var locations = ["New York City, New York", "Hong Kong, China", "Dubai, United Arab Emirates", "San Francisco, California", "Berlin, Germany", "Paris, France", "Florence, Italy", "Melbourne, Australia"]; //Listed to screen as possibilities
+
+var possLocationsList = []; //Initial options: travel, sell, buy; change throughout game
+
+var options = ["t", "s", "b"]; //Warehouse inv
+
 var wInventory = {
   "Diamonds": 0,
   "Emeralds": 0,
   "Rubies": 0
-};
+}; //Briefcase inv
+
 var bInventory = {
   "Diamonds": 5,
   "Emeralds": 0,
   "Rubies": 2 //"Rockefeller Emerald": true,
 
-};
+}; //Determine if selling or buying
+
 var selling = false;
 var startMoney = {
   'cash': 0,
   'bank': 0,
   'debt': 5000
-}; //Implementation
+}; //IMPLEMENTATION
 
 function listLocations() {
+  //Populates possible locations list from all locations
   for (var i = 0; i < locations.length; i++) {
     if (possLocationsList.length <= locations.length - 1) {
       possLocationsList.push(locations[i]);
@@ -248,6 +258,7 @@ function listLocations() {
 }
 
 function getNewQuestion() {
+  //Get question to display on screen, set options
   if (choice == 't' && prevChoice != 's' && prevChoice != 'b') {
     prevChoice = 't';
     listLocations();
@@ -267,6 +278,7 @@ function getNewQuestion() {
 }
 
 function resetLocation() {
+  //Called when travel and after selling/buying
   choice = "";
   prevChoice = "";
   goodInput = false;
@@ -281,6 +293,7 @@ function resetLocation() {
 }
 
 function getNewLocation() {
+  //Set new location from user choice when traveling
   if (choice == 'n' && prevChoice == 't') {
     resetLocation();
     location.location = locations[0];
@@ -317,6 +330,7 @@ function getNewLocation() {
 }
 
 function getSelling() {
+  //Determine options from inv, return new question
   function range(item) {
     var arr = Array.from(Array(item).keys());
     arr.push(arr.length);
@@ -326,21 +340,18 @@ function getSelling() {
 
   switch (choice) {
     case 'd':
-      //console.log("selling diamonds");
       options = range(bInventory["Diamonds"]);
       prevChoice = 'Diamonds';
       goodInput = false;
       return "How many diamonds would you like to sell?";
 
     case 'e':
-      //console.log("selling emeralds");
       options = range(bInventory["Emeralds"]);
       prevChoice = 'Emeralds';
       goodInput = false;
       return "How many emeralds would you like to sell?";
 
     case 'r':
-      //console.log("selling rubies");
       options = range(bInventory["Rubies"]);
       prevChoice = 'Rubies';
       goodInput = false;
@@ -352,10 +363,12 @@ function getSelling() {
 }
 
 function getNumSelling() {
+  //Convert user input to number
   return parseInt(choice);
 }
 
 function getBuying() {
+  //Determine options from max possible and current amount, return new question
   function range(item) {
     var maxAmount = 9;
     var currAmount = item;
@@ -394,18 +407,20 @@ function getBuying() {
 }
 
 function getNumBuying() {
+  //Convert user input to number
   return parseInt(choice);
 }
 
 function init() {
+  //Called in beginning and every time location reset @ resetLocation()
   var bg = new _background__WEBPACK_IMPORTED_MODULE_0__["default"](canvas, colors);
-  objects = [];
   location = new _location__WEBPACK_IMPORTED_MODULE_2__["default"](canvas, colors, locations[Math.floor(Math.random() * locations.length)]);
   question = new _question__WEBPACK_IMPORTED_MODULE_3__["default"](colors, "What would you like to do? (Buy, Sell, Travel)");
   var possLocations = new _possibleLocations__WEBPACK_IMPORTED_MODULE_1__["default"](colors, possLocationsList);
   inv = new _inventory__WEBPACK_IMPORTED_MODULE_4__["default"](wInventory, bInventory, colors);
   money = new _money__WEBPACK_IMPORTED_MODULE_5__["default"](colors, startMoney);
   currValues = new _values__WEBPACK_IMPORTED_MODULE_6__["default"](location.location, colors);
+  objects = [];
   objects.push(bg);
   objects.push(location);
   objects.push(question);
@@ -413,20 +428,20 @@ function init() {
   objects.push(inv);
   objects.push(money);
   objects.push(currValues);
-} // Animation Loop
+} // ANIMATION LOOP
 
 
 function animate() {
   setTimeout(function () {
     requestAnimationFrame(animate);
-  }, 500);
+  }, 100);
   c.clearRect(0, 0, canvas.width, canvas.height);
   currValues.currLocation = location.location;
 
   if (goodInput == true) {
     question.question = getNewQuestion();
     location.location = getNewLocation();
-  } //SELLING
+  } //Selling
 
 
   if (goodInput == true && prevChoice == "s") {
@@ -441,7 +456,7 @@ function animate() {
     var currLoc = location.location;
     resetLocation();
     location.location = currLoc;
-  } //BUYING
+  } //Buying
 
 
   if (goodInput == true && prevChoice == 'b') {
@@ -451,7 +466,7 @@ function animate() {
 
   if (goodInput == true && selling == false && (prevChoice == 'Diamonds' || prevChoice == 'Emeralds' || prevChoice == 'Rubies')) {
     goodInput = false; // if (cash.cash >= currValues.locations[location.location][prevChoice]){
-    //   console.log('ENough money');
+    //   console.log('Enough money');
     // }
 
     inv.increase(prevChoice, getNumBuying());
@@ -463,7 +478,8 @@ function animate() {
   objects.forEach(function (object) {
     object.update(c, choice);
   });
-}
+} //Initialize user input
+
 
 var goodInput = false;
 var choice = "";
@@ -473,8 +489,8 @@ animate(); //User input check
 
 document.addEventListener('keyup', function (e) {
   if (options.includes(e.key)) {
-    goodInput = true;
     choice = e.key;
+    goodInput = true;
   }
 });
 
@@ -521,7 +537,7 @@ var Inventory = /*#__PURE__*/function () {
     this.wInventory = this.warehouse.inventory;
     this.briefcase = new _briefcaseInventory__WEBPACK_IMPORTED_MODULE_1__["default"](bInventory);
     this.bInventory = this.briefcase.inventory;
-    this.color = colors[1];
+    this.color = colors['text'];
   }
 
   _createClass(Inventory, [{
@@ -609,7 +625,7 @@ var Location = /*#__PURE__*/function () {
   function Location(canvas, colors, location) {
     _classCallCheck(this, Location);
 
-    this.color = colors[1];
+    this.color = colors['text'];
     this.location = location;
     this.x = (canvas.width - 13) / 6 * 2 + 18;
     this.y = 53;
@@ -659,7 +675,7 @@ var Money = /*#__PURE__*/function () {
     this.x = 315;
     this.y = 195;
     this.bx = 25;
-    this.color = colors[1];
+    this.color = colors['text'];
     this.cash = money['cash'];
     this.bank = money['bank'];
     this.debt = money['debt'];
@@ -710,7 +726,7 @@ var PossLocations = /*#__PURE__*/function () {
 
     this.x = 15;
     this.y = 270;
-    this.color = colors[1];
+    this.color = colors['text'];
     this.locations = locations;
   }
 
@@ -762,13 +778,13 @@ var Question = /*#__PURE__*/function () {
 
     this.x = 15;
     this.y = 250;
-    this.color = colors[1];
+    this.color = colors['text'];
     this.question = question;
   }
 
   _createClass(Question, [{
     key: "draw",
-    value: function draw(c) {
+    value: function draw(c, choice) {
       c.fillStyle = this.color;
       c.font = "12px Consolas";
       c.fillText(this.question, this.x, this.y);
@@ -776,7 +792,7 @@ var Question = /*#__PURE__*/function () {
   }, {
     key: "update",
     value: function update(c, choice) {
-      this.draw(c);
+      this.draw(c, choice);
     }
   }]);
 
@@ -867,7 +883,7 @@ var Values = /*#__PURE__*/function () {
     this.currLocation = location;
     this.x = 15;
     this.y = 310;
-    this.color = colors[1];
+    this.color = colors['text'];
   }
 
   _createClass(Values, [{
@@ -893,7 +909,9 @@ var Values = /*#__PURE__*/function () {
   }, {
     key: "update",
     value: function update(c, choice) {
-      this.draw(c);
+      if (choice != 't') {
+        this.draw(c);
+      }
     }
   }]);
 

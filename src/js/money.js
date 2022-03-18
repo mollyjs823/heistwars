@@ -3,7 +3,7 @@ export default class Money{
         this.x = 315;
         this.y = 195; 
         this.bx = 25;
-        this.color = colors[1];
+        this.color = colors['text'];
         this.cash = money['cash'];
         this.bank = money['bank'];
         this.debt = money['debt'];

@@ -48,7 +48,7 @@ export default class Values{
         this.currLocation = location;
         this.x = 15;
         this.y = 310;
-        this.color = colors[1]
+        this.color = colors['text']
     }
 
     draw(c){
@@ -64,6 +64,8 @@ export default class Values{
     }
 
     update(c, choice) {
-        this.draw(c);
+        if (choice != 't'){
+            this.draw(c);
+        }
     }
 }
