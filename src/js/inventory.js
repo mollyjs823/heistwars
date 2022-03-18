@@ -26,7 +26,7 @@ export default class Inventory{
         //Briefcase
         i = 0;
         for (const [key, value] of Object.entries(this.bInventory)) {
-            if (value == true) {
+            if (value === true) {
                 c.fillText(`${key}`, this.briefcase.x, this.briefcase.y + 20 * i);
             } else {
             c.fillText(`${key}: ${value}`, this.briefcase.x, this.briefcase.y + 20 * i);
@@ -41,10 +41,12 @@ export default class Inventory{
 
     increase(item, number){
         this.bInventory[item] += number;
+        
     }
 
-    decrease(item, number){
+    decrease(item, number, price, money){
         this.bInventory[item] -= number;
+        return money += price * number;
     }
     
 }

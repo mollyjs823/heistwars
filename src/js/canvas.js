@@ -4,6 +4,7 @@ import Location from './location';
 import Question from './question';
 import Inventory from './inventory';
 import Money from './money';
+import Values from './values';
 
 const canvas = document.querySelector('canvas');
 const c = canvas.getContext('2d');
@@ -27,24 +28,24 @@ let locations = ["New York City, New York",
 var possLocationsList = [];
 let options = ["t", "s", "b"];
 var inv;
-var cash;
+var money;
+var currValues;
 let wInventory = {
   "Diamonds": 0,
   "Emeralds": 0,
   "Rubies": 0,
-  "Ghent Altarpiece PLACEHOLDER": true,
 };
 let bInventory = {
   "Diamonds": 5,
   "Emeralds": 0,
   "Rubies": 2,
-  "Picasso": true,
+  //"Rockefeller Emerald": true,
 };
 let selling = false;
-let money = {
+let startMoney = {
   'cash': 0,
   'bank': 0,
-  'debt': 0,
+  'debt': 5000,
 } 
 
 //Implementation
@@ -80,8 +81,14 @@ function resetLocation(){
   choice = "";
   prevChoice = "";
   goodInput = false;
-  options = ["t", "s", "b"]
+  options = ["t", "s", "b"];
+  let currCash = money.cash;
+  let currBank = money.bank;
+  let currDebt = money.debt;
   init();
+  money.cash = currCash;
+  money.bank = currBank;
+  money.debt = currDebt;
 }
 
 function getNewLocation() {
@@ -153,7 +160,6 @@ function getSelling(){
 }
 
 function getNumSelling(){
-  console.log(typeof choice);
     return parseInt(choice);
 }
 
@@ -204,13 +210,15 @@ function init() {
   question = new Question(colors, "What would you like to do? (Buy, Sell, Travel)");
   var possLocations = new PossLocations(colors, possLocationsList);
   inv = new Inventory(wInventory, bInventory, colors);
-  cash = new Money(colors, money);
+  money = new Money(colors, startMoney);
+  currValues = new Values(location.location, colors);
   objects.push(bg);
   objects.push(location);
   objects.push(question);
   objects.push(possLocations);  
   objects.push(inv);
-  objects.push(cash);
+  objects.push(money);
+  objects.push(currValues);
 }
 
 
@@ -218,33 +226,37 @@ function init() {
 function animate() {
   setTimeout(() => {requestAnimationFrame(animate)}, 500);
   c.clearRect(0, 0, canvas.width, canvas.height);
+  currValues.currLocation = location.location;
   
   if (goodInput == true) {
     question.question = getNewQuestion();
     location.location = getNewLocation();
   }
 
+  //SELLING
   if (goodInput == true && prevChoice == "s"){
     goodInput = false;
     selling = true;
     question.question = getSelling();
   }
-
   if (goodInput == true && selling == true && (prevChoice == 'Diamonds' || prevChoice == 'Emeralds' || prevChoice == 'Rubies')) {
     goodInput = false;
-    inv.decrease(prevChoice, getNumSelling());
+    money.cash = inv.decrease(prevChoice, getNumSelling(), (currValues.locations[currValues.currLocation][prevChoice]), money.cash);
     let currLoc = location.location;
     resetLocation();
     location.location = currLoc;
   }
 
+  //BUYING
   if (goodInput == true && prevChoice == 'b'){
     goodInput = false;
     question.question = getBuying();
   }
-
   if (goodInput == true && selling == false && (prevChoice == 'Diamonds' || prevChoice == 'Emeralds' || prevChoice == 'Rubies')) {
     goodInput = false;
+    // if (cash.cash >= currValues.locations[location.location][prevChoice]){
+    //   console.log('ENough money');
+    // }
     inv.increase(prevChoice, getNumBuying());
     let currLoc = location.location;
     resetLocation();

@@ -198,7 +198,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _question__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./question */ "./src/js/question.js");
 /* harmony import */ var _inventory__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./inventory */ "./src/js/inventory.js");
 /* harmony import */ var _money__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./money */ "./src/js/money.js");
-function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+/* harmony import */ var _values__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./values */ "./src/js/values.js");
 
 
 
@@ -219,24 +219,24 @@ var locations = ["New York City, New York", "Hong Kong, China", "Dubai, United A
 var possLocationsList = [];
 var options = ["t", "s", "b"];
 var inv;
-var cash;
+var money;
+var currValues;
 var wInventory = {
   "Diamonds": 0,
   "Emeralds": 0,
-  "Rubies": 0,
-  "Ghent Altarpiece PLACEHOLDER": true
+  "Rubies": 0
 };
 var bInventory = {
   "Diamonds": 5,
   "Emeralds": 0,
-  "Rubies": 2,
-  "Picasso": true
+  "Rubies": 2 //"Rockefeller Emerald": true,
+
 };
 var selling = false;
-var money = {
+var startMoney = {
   'cash': 0,
   'bank': 0,
-  'debt': 0
+  'debt': 5000
 }; //Implementation
 
 function listLocations() {
@@ -271,7 +271,13 @@ function resetLocation() {
   prevChoice = "";
   goodInput = false;
   options = ["t", "s", "b"];
+  var currCash = money.cash;
+  var currBank = money.bank;
+  var currDebt = money.debt;
   init();
+  money.cash = currCash;
+  money.bank = currBank;
+  money.debt = currDebt;
 }
 
 function getNewLocation() {
@@ -346,7 +352,6 @@ function getSelling() {
 }
 
 function getNumSelling() {
-  console.log(_typeof(choice));
   return parseInt(choice);
 }
 
@@ -399,13 +404,15 @@ function init() {
   question = new _question__WEBPACK_IMPORTED_MODULE_3__["default"](colors, "What would you like to do? (Buy, Sell, Travel)");
   var possLocations = new _possibleLocations__WEBPACK_IMPORTED_MODULE_1__["default"](colors, possLocationsList);
   inv = new _inventory__WEBPACK_IMPORTED_MODULE_4__["default"](wInventory, bInventory, colors);
-  cash = new _money__WEBPACK_IMPORTED_MODULE_5__["default"](colors, money);
+  money = new _money__WEBPACK_IMPORTED_MODULE_5__["default"](colors, startMoney);
+  currValues = new _values__WEBPACK_IMPORTED_MODULE_6__["default"](location.location, colors);
   objects.push(bg);
   objects.push(location);
   objects.push(question);
   objects.push(possLocations);
   objects.push(inv);
-  objects.push(cash);
+  objects.push(money);
+  objects.push(currValues);
 } // Animation Loop
 
 
@@ -414,11 +421,13 @@ function animate() {
     requestAnimationFrame(animate);
   }, 500);
   c.clearRect(0, 0, canvas.width, canvas.height);
+  currValues.currLocation = location.location;
 
   if (goodInput == true) {
     question.question = getNewQuestion();
     location.location = getNewLocation();
-  }
+  } //SELLING
+
 
   if (goodInput == true && prevChoice == "s") {
     goodInput = false;
@@ -428,11 +437,12 @@ function animate() {
 
   if (goodInput == true && selling == true && (prevChoice == 'Diamonds' || prevChoice == 'Emeralds' || prevChoice == 'Rubies')) {
     goodInput = false;
-    inv.decrease(prevChoice, getNumSelling());
+    money.cash = inv.decrease(prevChoice, getNumSelling(), currValues.locations[currValues.currLocation][prevChoice], money.cash);
     var currLoc = location.location;
     resetLocation();
     location.location = currLoc;
-  }
+  } //BUYING
+
 
   if (goodInput == true && prevChoice == 'b') {
     goodInput = false;
@@ -440,7 +450,10 @@ function animate() {
   }
 
   if (goodInput == true && selling == false && (prevChoice == 'Diamonds' || prevChoice == 'Emeralds' || prevChoice == 'Rubies')) {
-    goodInput = false;
+    goodInput = false; // if (cash.cash >= currValues.locations[location.location][prevChoice]){
+    //   console.log('ENough money');
+    // }
+
     inv.increase(prevChoice, getNumBuying());
     var _currLoc = location.location;
     resetLocation();
@@ -541,7 +554,7 @@ var Inventory = /*#__PURE__*/function () {
             _key = _Object$entries2$_i[0],
             _value = _Object$entries2$_i[1];
 
-        if (_value == true) {
+        if (_value === true) {
           c.fillText("".concat(_key), this.briefcase.x, this.briefcase.y + 20 * i);
         } else {
           c.fillText("".concat(_key, ": ").concat(_value), this.briefcase.x, this.briefcase.y + 20 * i);
@@ -563,8 +576,9 @@ var Inventory = /*#__PURE__*/function () {
     }
   }, {
     key: "decrease",
-    value: function decrease(item, number) {
+    value: function decrease(item, number, price, money) {
       this.bInventory[item] -= number;
+      return money += price * number;
     }
   }]);
 
@@ -767,6 +781,123 @@ var Question = /*#__PURE__*/function () {
   }]);
 
   return Question;
+}();
+
+
+
+/***/ }),
+
+/***/ "./src/js/values.js":
+/*!**************************!*\
+  !*** ./src/js/values.js ***!
+  \**************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Values; });
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
+
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(n); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+function _iterableToArrayLimit(arr, i) { if (typeof Symbol === "undefined" || !(Symbol.iterator in Object(arr))) return; var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var Values = /*#__PURE__*/function () {
+  function Values(location, colors) {
+    _classCallCheck(this, Values);
+
+    this.locations = {
+      "New York City, New York": {
+        'Diamonds': 3225,
+        'Emeralds': 700,
+        'Rubies': 1620,
+        'Rockefeller Emerald': 6000000
+      },
+      "Hong Kong, China": {
+        'Diamonds': 10320,
+        'Emeralds': 910,
+        'Rubies': 1620,
+        'Sunrise Ruby': 34200000
+      },
+      "Dubai, United Arab Emirates": {
+        'Diamonds': 7110,
+        'Emeralds': 900,
+        'Rubies': 1620
+      },
+      "San Francisco, California": {
+        'Diamonds': 2500,
+        'Emeralds': 725,
+        'Rubies': 1620
+      },
+      "Berlin, Germany": {
+        'Diamonds': 7550,
+        'Emeralds': 767,
+        'Rubies': 1620,
+        'Strawn-Wagner Diamond': 34700
+      },
+      "Paris, France": {
+        'Diamonds': 6945,
+        'Emeralds': 740,
+        'Rubies': 1620
+      },
+      "Florence, Italy": {
+        'Diamonds': 4125,
+        'Emeralds': 990,
+        'Rubies': 1620
+      },
+      "Melbourne, Australia": {
+        'Diamonds': 2750,
+        'Emeralds': 1010,
+        'Rubies': 1620
+      }
+    };
+    this.currLocation = location;
+    this.x = 15;
+    this.y = 310;
+    this.color = colors[1];
+  }
+
+  _createClass(Values, [{
+    key: "draw",
+    value: function draw(c) {
+      c.fillStyle = this.color;
+      c.font = "12px Consolas";
+      c.fillText("The prices of gems here are:", this.x, this.y - 20);
+      c.font = "11px Consolas";
+      var i = 0;
+
+      for (var _i = 0, _Object$entries = Object.entries(this.locations[this.currLocation]); _i < _Object$entries.length; _i++) {
+        var _Object$entries$_i = _slicedToArray(_Object$entries[_i], 2),
+            key = _Object$entries$_i[0],
+            value = _Object$entries$_i[1];
+
+        c.fillText("".concat(key, ": ").concat(value), this.x, this.y + 20 * i);
+        i++;
+      }
+
+      ;
+    }
+  }, {
+    key: "update",
+    value: function update(c, choice) {
+      this.draw(c);
+    }
+  }]);
+
+  return Values;
 }();
 
 
