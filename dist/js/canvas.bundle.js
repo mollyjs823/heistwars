@@ -197,7 +197,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _location__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./location */ "./src/js/location.js");
 /* harmony import */ var _question__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./question */ "./src/js/question.js");
 /* harmony import */ var _inventory__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./inventory */ "./src/js/inventory.js");
+/* harmony import */ var _money__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./money */ "./src/js/money.js");
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
 
 
 
@@ -217,6 +219,7 @@ var locations = ["New York City, New York", "Hong Kong, China", "Dubai, United A
 var possLocationsList = [];
 var options = ["t", "s", "b"];
 var inv;
+var cash;
 var wInventory = {
   "Diamonds": 0,
   "Emeralds": 0,
@@ -227,9 +230,14 @@ var bInventory = {
   "Diamonds": 5,
   "Emeralds": 0,
   "Rubies": 2,
-  "Picasso PLACEHOLDER": true
+  "Picasso": true
 };
-var selling = false; //Implementation
+var selling = false;
+var money = {
+  'cash': 0,
+  'bank': 0,
+  'debt': 0
+}; //Implementation
 
 function listLocations() {
   for (var i = 0; i < locations.length; i++) {
@@ -390,12 +398,14 @@ function init() {
   location = new _location__WEBPACK_IMPORTED_MODULE_2__["default"](canvas, colors, locations[Math.floor(Math.random() * locations.length)]);
   question = new _question__WEBPACK_IMPORTED_MODULE_3__["default"](colors, "What would you like to do? (Buy, Sell, Travel)");
   var possLocations = new _possibleLocations__WEBPACK_IMPORTED_MODULE_1__["default"](colors, possLocationsList);
-  inv = new _inventory__WEBPACK_IMPORTED_MODULE_4__["default"](canvas, wInventory, bInventory, colors);
+  inv = new _inventory__WEBPACK_IMPORTED_MODULE_4__["default"](wInventory, bInventory, colors);
+  cash = new _money__WEBPACK_IMPORTED_MODULE_5__["default"](colors, money);
   objects.push(bg);
   objects.push(location);
   objects.push(question);
   objects.push(possLocations);
   objects.push(inv);
+  objects.push(cash);
 } // Animation Loop
 
 
@@ -491,10 +501,9 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
 
 var Inventory = /*#__PURE__*/function () {
-  function Inventory(canvas, wInventory, bInventory, colors) {
+  function Inventory(wInventory, bInventory, colors) {
     _classCallCheck(this, Inventory);
 
-    this.canvas = canvas;
     this.warehouse = new _warehouseInventory__WEBPACK_IMPORTED_MODULE_0__["default"](wInventory);
     this.wInventory = this.warehouse.inventory;
     this.briefcase = new _briefcaseInventory__WEBPACK_IMPORTED_MODULE_1__["default"](bInventory);
@@ -607,6 +616,58 @@ var Location = /*#__PURE__*/function () {
   }]);
 
   return Location;
+}();
+
+
+
+/***/ }),
+
+/***/ "./src/js/money.js":
+/*!*************************!*\
+  !*** ./src/js/money.js ***!
+  \*************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Money; });
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var Money = /*#__PURE__*/function () {
+  function Money(colors, money) {
+    _classCallCheck(this, Money);
+
+    this.x = 315;
+    this.y = 195;
+    this.bx = 25;
+    this.color = colors[1];
+    this.cash = money['cash'];
+    this.bank = money['bank'];
+    this.debt = money['debt'];
+  }
+
+  _createClass(Money, [{
+    key: "draw",
+    value: function draw(c) {
+      c.fillStyle = this.color;
+      c.font = "12px Consolas";
+      c.fillText("Cash: ".concat(this.cash), this.x, this.y);
+      c.fillText("Bank: ".concat(this.bank), this.bx, this.y);
+      c.fillText("Debt: ".concat(this.debt), this.bx, this.y + 15);
+    }
+  }, {
+    key: "update",
+    value: function update(c, choice) {
+      this.draw(c);
+    }
+  }]);
+
+  return Money;
 }();
 
 

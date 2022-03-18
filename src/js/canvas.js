@@ -3,6 +3,7 @@ import PossLocations from './possibleLocations';
 import Location from './location';
 import Question from './question';
 import Inventory from './inventory';
+import Money from './money';
 
 const canvas = document.querySelector('canvas');
 const c = canvas.getContext('2d');
@@ -26,6 +27,7 @@ let locations = ["New York City, New York",
 var possLocationsList = [];
 let options = ["t", "s", "b"];
 var inv;
+var cash;
 let wInventory = {
   "Diamonds": 0,
   "Emeralds": 0,
@@ -36,9 +38,14 @@ let bInventory = {
   "Diamonds": 5,
   "Emeralds": 0,
   "Rubies": 2,
-  "Picasso PLACEHOLDER": true,
+  "Picasso": true,
 };
 let selling = false;
+let money = {
+  'cash': 0,
+  'bank': 0,
+  'debt': 0,
+} 
 
 //Implementation
 function listLocations() {
@@ -196,12 +203,14 @@ function init() {
   location = new Location(canvas, colors, locations[Math.floor(Math.random() * locations.length)]);
   question = new Question(colors, "What would you like to do? (Buy, Sell, Travel)");
   var possLocations = new PossLocations(colors, possLocationsList);
-  inv = new Inventory(canvas, wInventory, bInventory, colors);
+  inv = new Inventory(wInventory, bInventory, colors);
+  cash = new Money(colors, money);
   objects.push(bg);
   objects.push(location);
   objects.push(question);
   objects.push(possLocations);  
   objects.push(inv);
+  objects.push(cash);
 }
 
 

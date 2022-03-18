@@ -2,11 +2,10 @@ import getWarehouseInv from "./warehouseInventory";
 import getBriefcaseInv from "./briefcaseInventory";
 
 export default class Inventory{
-    constructor(canvas, wInventory, bInventory, colors){
-        this.canvas = canvas;
-        this.warehouse = new getWarehouseInv(wInventory)
+    constructor(wInventory, bInventory, colors){
+        this.warehouse = new getWarehouseInv(wInventory);
         this.wInventory = this.warehouse.inventory;
-        this.briefcase = new getBriefcaseInv(bInventory)
+        this.briefcase = new getBriefcaseInv(bInventory);
         this.bInventory = this.briefcase.inventory;
         this.color = colors[1];
     }
