@@ -243,7 +243,7 @@ var bInventory = {
 
 var selling = false;
 var startMoney = {
-  'cash': 0,
+  'cash': 2000,
   'bank': 0,
   'debt': 5000
 }; //IMPLEMENTATION
@@ -379,27 +379,29 @@ function getBuying() {
     return strArr;
   }
 
+  var itemPrice = currValues.locations[currValues.currLocation];
+
   switch (choice) {
     case 'd':
       //console.log("buying diamonds");
       options = range(bInventory["Diamonds"]);
       prevChoice = 'Diamonds';
       goodInput = false;
-      return "How many diamonds would you like to buy?";
+      return "How many diamonds would you like to buy? You have enough cash for ".concat(Math.floor(money.cash / itemPrice['Diamonds']));
 
     case 'e':
       //console.log("buying emeralds");
       options = range(bInventory["Emeralds"]);
       prevChoice = 'Emeralds';
       goodInput = false;
-      return "How many emeralds would you like to buy?";
+      return "How many emeralds would you like to buy? You have enough cash for ".concat(Math.floor(money.cash / itemPrice['Emeralds']));
 
     case 'r':
       //console.log("buying rubies");
       options = range(bInventory["Rubies"]);
       prevChoice = 'Rubies';
       goodInput = false;
-      return "How many rubies would you like to buy?";
+      return "How many rubies would you like to buy? You have enough cash for ".concat(Math.floor(money.cash / itemPrice['Rubies']));
 
     default:
       return "What are you looking to buy?";
@@ -441,8 +443,9 @@ function animate() {
   if (goodInput == true) {
     question.question = getNewQuestion();
     location.location = getNewLocation();
-  } //Selling
+  }
 
+  var itemPrice = currValues.locations[currValues.currLocation][prevChoice]; //Selling
 
   if (goodInput == true && prevChoice == "s") {
     goodInput = false;
@@ -452,11 +455,12 @@ function animate() {
 
   if (goodInput == true && selling == true && (prevChoice == 'Diamonds' || prevChoice == 'Emeralds' || prevChoice == 'Rubies')) {
     goodInput = false;
-    money.cash = inv.decrease(prevChoice, getNumSelling(), currValues.locations[currValues.currLocation][prevChoice], money.cash);
+    money.cash = inv.decrease(prevChoice, getNumSelling(), itemPrice, money.cash);
     var currLoc = location.location;
     resetLocation();
     location.location = currLoc;
   } //Buying
+  //PROBLEM: CANT ENTER 2 DIGIT NUMBER !!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
   if (goodInput == true && prevChoice == 'b') {
@@ -465,11 +469,12 @@ function animate() {
   }
 
   if (goodInput == true && selling == false && (prevChoice == 'Diamonds' || prevChoice == 'Emeralds' || prevChoice == 'Rubies')) {
-    goodInput = false; // if (cash.cash >= currValues.locations[location.location][prevChoice]){
-    //   console.log('Enough money');
-    // }
+    goodInput = false;
 
-    inv.increase(prevChoice, getNumBuying());
+    if (money.cash >= itemPrice * getNumBuying()) {
+      money.cash = inv.increase(prevChoice, getNumBuying(), itemPrice, money.cash);
+    }
+
     var _currLoc = location.location;
     resetLocation();
     location.location = _currLoc;
@@ -587,8 +592,9 @@ var Inventory = /*#__PURE__*/function () {
     }
   }, {
     key: "increase",
-    value: function increase(item, number) {
+    value: function increase(item, number, price, money) {
       this.bInventory[item] += number;
+      return money -= price * number;
     }
   }, {
     key: "decrease",

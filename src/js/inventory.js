@@ -39,9 +39,9 @@ export default class Inventory{
         this.draw(c);
     }
 
-    increase(item, number){
+    increase(item, number, price, money){
         this.bInventory[item] += number;
-        
+        return money -= price * number;
     }
 
     decrease(item, number, price, money){

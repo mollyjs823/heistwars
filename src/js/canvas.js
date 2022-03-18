@@ -49,7 +49,7 @@ let bInventory = {
 //Determine if selling or buying
 let selling = false;
 let startMoney = {
-  'cash': 0,
+  'cash': 2000,
   'bank': 0,
   'debt': 5000,
 } 
@@ -184,25 +184,26 @@ function getBuying(){
     var strArr = arr.map(String);
     return strArr;
   }
+  let itemPrice = currValues.locations[currValues.currLocation];
   switch(choice){
     case 'd':
       //console.log("buying diamonds");
       options = range(bInventory["Diamonds"]);
       prevChoice = 'Diamonds';
       goodInput = false;
-      return "How many diamonds would you like to buy?";
+      return `How many diamonds would you like to buy? You have enough cash for ${Math.floor(money.cash / itemPrice['Diamonds'])}`;
     case 'e':
       //console.log("buying emeralds");
       options = range(bInventory["Emeralds"]);
       prevChoice = 'Emeralds';
       goodInput = false;
-      return "How many emeralds would you like to buy?";
+      return `How many emeralds would you like to buy? You have enough cash for ${Math.floor(money.cash / itemPrice['Emeralds'])}`;
     case 'r':
       //console.log("buying rubies");
       options = range(bInventory["Rubies"]);
       prevChoice = 'Rubies';
       goodInput = false;
-      return "How many rubies would you like to buy?";
+      return `How many rubies would you like to buy? You have enough cash for ${Math.floor(money.cash / itemPrice['Rubies'])}`;
     default:
       return "What are you looking to buy?";
   }
@@ -247,6 +248,7 @@ function animate() {
     location.location = getNewLocation();
   }
 
+  let itemPrice = currValues.locations[currValues.currLocation][prevChoice];
   //Selling
   if (goodInput == true && prevChoice == "s"){
     goodInput = false;
@@ -255,23 +257,23 @@ function animate() {
   }
   if (goodInput == true && selling == true && (prevChoice == 'Diamonds' || prevChoice == 'Emeralds' || prevChoice == 'Rubies')) {
     goodInput = false;
-    money.cash = inv.decrease(prevChoice, getNumSelling(), (currValues.locations[currValues.currLocation][prevChoice]), money.cash);
+    money.cash = inv.decrease(prevChoice, getNumSelling(), itemPrice, money.cash);
     let currLoc = location.location;
     resetLocation();
     location.location = currLoc;
   }
 
   //Buying
+  //PROBLEM: CANT ENTER 2 DIGIT NUMBER !!!!!!!!!!!!!!!!!!!!!!!!!!
   if (goodInput == true && prevChoice == 'b'){
     goodInput = false;
     question.question = getBuying();
   }
   if (goodInput == true && selling == false && (prevChoice == 'Diamonds' || prevChoice == 'Emeralds' || prevChoice == 'Rubies')) {
     goodInput = false;
-    // if (cash.cash >= currValues.locations[location.location][prevChoice]){
-    //   console.log('Enough money');
-    // }
-    inv.increase(prevChoice, getNumBuying());
+    if (money.cash >= itemPrice * getNumBuying()){
+      money.cash = inv.increase(prevChoice, getNumBuying(), itemPrice, money.cash);
+    }
     let currLoc = location.location;
     resetLocation();
     location.location = currLoc;
