@@ -246,7 +246,7 @@ var startMoney = {
   'cash': 2000,
   'bank': 0,
   'debt': 5000
-}; //IMPLEMENTATION
+};
 
 function listLocations() {
   //Populates possible locations list from all locations

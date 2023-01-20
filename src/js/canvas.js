@@ -13,7 +13,6 @@ canvas.width = 600;
 canvas.height = 400;
 const colors = {'bg': '#171717', 'text': '#70d9ff'};
 
-
 // Global Variables
 let objects;
 let question;
@@ -52,9 +51,7 @@ let startMoney = {
   'cash': 2000,
   'bank': 0,
   'debt': 5000,
-} 
-
-//IMPLEMENTATION
+}
 
 function listLocations() {
   //Populates possible locations list from all locations
@@ -211,7 +208,7 @@ function getBuying(){
 
 function getNumBuying(){
   //Convert user input to number
-    return parseInt(choice);
+  return parseInt(choice);
 }
 
 
