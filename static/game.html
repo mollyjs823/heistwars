@@ -1,0 +1,227 @@
+<html>
+    <head>
+        <title>404 - Page Not Found</title>
+        <style type="text/css">
+            * {
+                font-family: 'Courier New', Courier, monospace;
+                line-height: 1.6rem;
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+            body {
+                width: 100%;
+                height: 100%;
+                background: #17181c;
+                color: #f8f8f8;
+                position: relative;
+                overflow: hidden;
+            }
+            #canvas {
+                position: absolute;
+                z-index: 10000;
+            }
+        </style>
+    </head>
+    <body>
+        <canvas id="canvas"></canvas>
+        <script src="canvas.js" type="module"></script>
+    </body>
+
+    <script type="text/javascript">
+        // // ROCKET
+        // function Rocket (x, y) {
+        //     this.width = 200;
+        //     this.height = 100;
+        //     this.x = x;
+        //     this.y = y;
+        //     this.speed = 0.5;
+        //     this.friction = 0.95;
+        //     this.vy = 0;
+        //     this.vx = 0;
+        // }
+        // Rocket.prototype.draw = function(context) {
+        //     context.drawImage(document.getElementById("rocket"), this.x, this.y, this.width, this.height);
+        // };
+        // Rocket.prototype.update = function(width, height) {
+        //     this.vy *= this.friction;
+        //     this.y += this.vy;
+        //     if (this.y <= 0) {
+        //         this.y = 0;
+        //         this.vy = 0;
+        //     } else if (this.y >= height - this.height) {
+        //         this.y = height - this.height;
+        //         this.vy = 0;
+        //     }
+        //     this.vx *= this.friction;
+        //     this.x += this.vx;
+        //     if (this.x <= 0) {
+        //         this.x = 0;
+        //         this.vx = 0;
+        //     } else if (this.x >= width) {
+        //         this.x = width;
+        //         this.vx = 0;
+        //     }
+        // };
+
+        // // GAME
+        // function Game () {
+        //     var canvas = document.getElementById("canvas");
+        //     this.context = canvas.getContext("2d");
+        //     this.context.fillStyle = "black";
+        //     this.context.canvas.width = window.innerWidth;
+        //     this.context.canvas.height = window.innerHeight;
+        //     this.width = canvas.width;
+        //     this.height = canvas.height;
+        //     this.asteroids = [];
+        //     this.bullets = [];
+        //     this.collisions = [];
+        //     this.gravity = 1.5;
+        //     this.rocket = new Rocket(Math.floor(0.1 * this.width), Math.floor(0.5 * this.height - 50));
+        //     this.runSpeed = -14;
+        //     this.paused = false;
+        //     this.score = 0;
+        //     this.desiredScore = 0;
+            
+        //     this.stars = [];
+        //     for (let i = 0; i < 50; i++) {
+        //         this.stars.push(new Star(this.width, this.height));
+        //     }
+            
+        //     document.spacePressed = false;
+        //     document.upPressed = false;
+        //     document.downPressed = false;
+        //     document.leftPressed = false;
+        //     document.rightPressed = false;
+
+        //     document.addEventListener("keydown", function(e) {
+        //         if (e.key === " " && canFire) {
+        //             document.spacePressed = true;
+        //             canFire = false;
+        //         }
+        //     });
+        //     document.addEventListener("keyup", function(e) {
+        //         if (e.key === " ") {
+        //             document.spacePressed = false;
+        //             canFire = true;
+        //         }
+        //     });
+        //     document.addEventListener("keydown", function(e) {
+        //         if (e.key === "ArrowUp") document.upPressed = true;
+        //     });
+        //     document.addEventListener("keyup", function(e) {
+        //         if (e.key === "ArrowUp") document.upPressed = false;
+        //     });
+        //     document.addEventListener("keydown", function(e) {
+        //         if (e.key === "ArrowDown") document.downPressed = true;
+        //     });
+        //     document.addEventListener("keyup", function(e) {
+        //         if (e.key === "ArrowDown") document.downPressed = false;
+        //     });
+        //     document.addEventListener("keydown", function(e) {
+        //         if (e.key === "ArrowLeft") document.leftPressed = true;
+        //     });
+        //     document.addEventListener("keyup", function(e) {
+        //         if (e.key === "ArrowLeft") document.leftPressed = false;
+        //     });
+        //     document.addEventListener("keydown", function(e) {
+        //         if (e.key === "ArrowRight") document.rightPressed = true;
+        //     });
+        //     document.addEventListener("keyup", function(e) {
+        //         if (e.key === "ArrowRight") document.rightPressed = false;
+        //     });
+        // }
+        // Game.prototype.update = function () {
+        //     if (this.paused){
+        //         document.getElementById("restart_btn").classList.remove("hidden");
+        //         return;
+        //     }
+        //     if (document.spacePressed) {
+        //         this.rocket.shoot(this.bullets);
+        //         document.spacePressed = false;
+        //     }
+        //     if (document.upPressed && topWall(this.rocket) > 0) {
+        //         this.rocket.moveUp();
+        //         for (let i = 0; i < this.stars.length; i++) {
+        //             this.stars[i].y += this.stars[i].speed;
+        //         }
+        //     }
+        //     else if (document.downPressed && bottomWall(this.rocket) < this.height) {
+        //         this.rocket.moveDown();
+        //         for (let i = 0; i < this.stars.length; i++) {
+        //             this.stars[i].y -= this.stars[i].speed;
+        //         }
+        //     }
+        //     if (document.leftPressed && leftWall(this.rocket) > 0) {
+        //         this.rocket.moveLeft();
+        //         for (let i = 0; i < this.stars.length; i++) {
+        //             this.stars[i].x += this.stars[i].speed;
+        //         }
+        //     }
+        //     else if (document.rightPressed && rightWall(this.rocket) < this.width / 3) {
+        //         this.rocket.moveRight();
+        //         for (let i = 0; i < this.stars.length; i++) {
+        //             this.stars[i].x -= this.stars[i].speed;
+        //         }
+        //     }
+        //     this.rocket.update(this.width / 3, this.height);
+
+        //     //Collision Detection
+        //     for (i = 0; i < this.asteroids.length; i++) {
+        //         if (rightWall(this.rocket) - 10 >= leftWall(this.asteroids[i]) && 
+        //             leftWall(this.rocket) + 20 <= rightWall(this.asteroids[i]) && 
+        //             bottomWall(this.rocket) - 20 >= topWall(this.asteroids[i]) &&
+        //             topWall(this.rocket) + 20 <= bottomWall(this.asteroids[i])
+        //         ){
+        //             this.paused = true;
+        //         }
+
+        //         for (j = 0; j < this.bullets.length; j++) {
+        //             if (rightWall(this.bullets[j]) >= leftWall(this.asteroids[i]) && 
+        //                 leftWall(this.bullets[j]) <= rightWall(this.asteroids[i]) && 
+        //                 bottomWall(this.bullets[j]) >= topWall(this.asteroids[i]) &&
+        //                 topWall(this.bullets[j]) <= bottomWall(this.asteroids[i])
+        //             ){
+        //                 this.asteroids[i].hits++;
+        //                 this.bullets[j].hit(this.collisions);
+        //                 this.bullets = this.bullets[j].destroy(this.bullets);
+        //                 this.desiredScore += this.asteroids[i].durability;
+        //                 if (this.asteroids[i].hits >= this.asteroids[i].durability) {
+        //                     this.asteroids = this.asteroids[i].destroy(this.asteroids);
+        //                     this.desiredScore += 5;
+        //                 }
+        //                 break;
+        //             }
+        //         }
+        //     }
+        // };
+        // Game.prototype.draw = function () {
+        //     this.context.clearRect(0, 0, this.width, this.height);
+        //     for (i = 0; i < this.stars.length; i++){
+        //         this.stars[i].draw(this.context);
+        //     }
+        //     this.rocket.draw(this.context);
+        //     for (i = 0; i < this.asteroids.length; i++){
+        //         this.asteroids[i].draw(this.context);
+        //     }
+        //     for (i = 0; i < this.bullets.length; i++){
+        //         this.bullets[i].draw(this.context);
+        //     }
+        //     for (i = 0; i < this.collisions.length; i++){
+        //         this.collisions = this.collisions[i].draw(this.context,this.collisions);
+        //     }
+        //     var oldFill = this.context.fillStyle;
+        //     this.context.fillStyle = "pink";
+        //     if (this.score < this.desiredScore) {
+        //         this.score++;
+        //     } else if (this.score > this.desiredScore) {
+        //         this.score--;
+        //     }
+        //     this.context.font = "30px Arial";
+        //     this.context.fillText(this.score, this.width - 60, 50);
+        //     this.context.fillStyle = oldFill;
+        // };
+
+        
+    </script>
+</html>
