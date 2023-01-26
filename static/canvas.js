@@ -1,6 +1,6 @@
 import Background from './background.js';
 import Cursor from './cursor.js';
-// import PossLocations from './possibleLocations.js';
+import PossLocations from './optionsMap.js';
 import Location from './location.js';
 import Question from './question.js';
 import Input from './input.js';
@@ -13,7 +13,7 @@ import Input from './input.js';
 // let inv;
 // let money;
 // let currValues;
-// let options = ["t", "s", "b"];
+// let options = ["t", "s", "b", "travel", "sell", "buy"];
 // //Warehouse inv
 // let wInventory = {
 //   "Diamonds": 0,
@@ -33,36 +33,6 @@ import Input from './input.js';
 //   'cash': 2000,
 //   'bank': 0,
 //   'debt': 5000,
-// }
-
-// function listLocations() {
-//   //Populates possible locations list from all locations
-//   for (let i=0; i < locations.length; i++) {
-//     if (possLocationsList.length <= locations.length - 1) {
-//       possLocationsList.push(locations[i]);
-//     }
-//   }
-// }
-
-// function getNewQuestion() {
-//   //Get question to display on screen, set options
-//   if (choice == 't' && prevChoice != 's' && prevChoice != 'b') {
-//     prevChoice = 't';
-//     listLocations();
-//     options = ['n', 'h', 'd', 's', 'b', 'p', 'f', 'm'];
-//     return "Where would you like to travel?";
-//   } else if (choice == 's' && prevChoice != 't' && prevChoice != 'b') {
-//     prevChoice = 's';
-//     selling = true;
-//     options = ['d', 'e', 'r'];
-//     return "";
-//   } else if (choice == 'b' && prevChoice != 't' && prevChoice != 's') {
-//     prevChoice = 'b';
-//     selling = false;
-//     options = ['d', 'e', 'r'];
-//     return "";
-//   }
-//   else return ""
 // }
 
 // function resetLocation(){
@@ -192,6 +162,7 @@ import Input from './input.js';
 //   //Convert user input to number
 //   return parseInt(choice);
 // }
+
 function rightEdge(obj) {
   return obj.x + obj.width;
 }
@@ -237,20 +208,23 @@ function Game () {
   this.question = new Question(this);
   this.cursor = new Cursor(rightEdge(this.question) + 5, bottomEdge(this.question));
   this.input = new Input(this);
-  // this.possLocations = new PossLocations(this);
+  this.possLocations = new PossLocations(this);
   // inv = new Inventory(wInventory, bInventory, colors);
   // money = new Money(colors, startMoney);
   // currValues = new Values(location.location, colors);
 }
 Game.prototype.update = function () {
   if (document.keyPressed) {
-    this.input.update(rightEdge(this.question) + 5, document.keyPressed);
+    let action = this.input.update(rightEdge(this.question) + 5, document.keyPressed);
     document.keyPressed = false;
+    if (action) {
+      this.question.update(this.processInput(this.input.getText()))
+    }
   }
   if (rightEdge(this.input) > rightEdge(this.question)) {
     this.cursor.update(rightEdge(this.input), bottomEdge(this.input));
   } else {
-    this.cursor.update(rightEdge(this.question), bottomEdge(this.question));
+    this.cursor.update(rightEdge(this.question) + 5, bottomEdge(this.question));
   }
 }
 Game.prototype.draw = function () {
@@ -258,6 +232,7 @@ Game.prototype.draw = function () {
   this.bg.draw(this.context);
   this.location.draw(this.context);
   this.question.draw(this.context);
+  this.possLocations.draw(this.context);
   this.input.draw(this.context);
   this.cursor.draw(this.context);
 }
@@ -286,7 +261,6 @@ Game.prototype.draw = function () {
   // }
 
   //Buying
-  //PROBLEM: CANT ENTER 2 DIGIT NUMBER !!!!!!!!!!!!!!!!!!!!!!!!!!
   // if (goodInput == true && prevChoice == 'b'){
   //   goodInput = false;
   //   question.question = getBuying();

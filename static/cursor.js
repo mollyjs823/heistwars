@@ -12,13 +12,12 @@ export default class Cursor {
     draw(c) {
         if (this.on) {
             c.fillStyle = this.colors['text'];
-            c.fillRect(this.x, this.y, this.width, this.height);
+            c.fillRect(this.x, this.y - 12, this.width, this.height);
         }
     }
   
-    update(x=this.x, y=this.y) {
+    update(x=this.x) {
         this.x = x;
-        this.y = y - this.height;
         this.count++;
         if (this.count == 30) {
             this.on = false;
