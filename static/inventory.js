@@ -1,45 +1,21 @@
-import getWarehouseInv from "./warehouseInventory.js";
-import getBriefcaseInv from "./briefcaseInventory.js";
+import Values from "./values.js";
 
 export default class Inventory{
-    constructor(wInventory, bInventory, colors){
-        // MAKE OPTIONS DYNAMIC: gems, precious metals, toys, etc
-        this.options = [
-            'Diamonds',
-            'Emeralds',
-            'Rubies'
-        ]
-        // this.warehouse = new getWarehouseInv(wInventory);
-        // this.wInventory = this.warehouse.inventory;
-        // this.briefcase = new getBriefcaseInv(bInventory);
-        // this.bInventory = this.briefcase.inventory;
-        // this.color = colors['text'];
+    constructor(c){
+        this.warehouse = new Values();
+        this.inventory = this.warehouse.getInventory();
+        this.color = '#70d9ff';
+        this.x = 30;
+        this.y = c.context.hUnit ;
     }
 
-    // draw(c){
-    //     //Warehouse
-    //     c.fillStyle = this.color;
-    //     c.font = "12px Consolas";
-    //     let i = 0;
-    //     for (const [key, value] of Object.entries(this.wInventory)) {
-    //         if (value == true) {
-    //             c.fillText(`${key}`, this.warehouse.x, this.warehouse.y + 20 * i);
-    //         } else {
-    //         c.fillText(`${key}: ${value}`, this.warehouse.x, this.warehouse.y + 20 * i);
-    //         i++;
-    //         }
-    //     };
-    //     //Briefcase
-    //     i = 0;
-    //     for (const [key, value] of Object.entries(this.bInventory)) {
-    //         if (value === true) {
-    //             c.fillText(`${key}`, this.briefcase.x, this.briefcase.y + 20 * i);
-    //         } else {
-    //         c.fillText(`${key}: ${value}`, this.briefcase.x, this.briefcase.y + 20 * i);
-    //         i++;
-    //         }
-    //     };
-    // }
+    draw(c){
+        c.fillStyle = this.color;
+        c.font = "12px Consolas";
+        for (let i = 0; i < Object.keys(this.inventory).length; i++) {
+            c.fillText(`${Object.keys(this.inventory)[i]}: ${Object.values(this.inventory)[i]}`, this.x, this.y + 20 * i);
+        };
+    }
 
     // update(c, choice){
     //     this.draw(c);

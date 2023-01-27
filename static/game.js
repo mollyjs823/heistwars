@@ -2,6 +2,7 @@ import Background from './background.js';
 import Question from './question.js';
 import Cursor from "./cursor.js";
 import Input from "./input.js";
+import Inventory from './inventory.js';
 
 function rightEdge(obj) {
   return obj.x + obj.width;
@@ -36,9 +37,7 @@ function Game () {
   
   this.bg = new Background(this);
   this.question = new Question(this);
-
-//   this.cursor = new Cursor();
-//   this.input = new Input(this);
+  this.inventory = new Inventory(this);
 }
 Game.prototype.update = function () {
     if (document.keyPressed) {
@@ -47,36 +46,37 @@ Game.prototype.update = function () {
         } else if (document.keyPressed === 'ArrowDown') {
             this.question.moveDown();
         } else if (document.keyPressed === 'Enter') {
-            if (this.input && this.input.text) {
-                var userInput = this.question.update(this.context, this.input.text);
-                delete this.cursor;
-                delete this.input;
-            } else {
-                var userInput = this.question.update(this.context);
-            }
+          if (this.input && this.input.text) {
+            var userInput = this.question.update(this.context, this.input.text);
+            delete this.cursor;
+            delete this.input;
+          } else {
+            var userInput = this.question.update(this.context);
+          }
         } else if (this.input) {
-            this.input.update(rightEdge(this.question), document.keyPressed);
+          this.input.update(rightEdge(this.question), document.keyPressed);
         }
         document.keyPressed = false;
     }
     if (userInput) {
-        if (!this.cursor) {
-            this.cursor = new Cursor(this.question.x + this.question.width + 5, this.question.y);
-            this.input = new Input(this, rightEdge(this.question));
+        if (!this.cursor && userInput === "transaction") {
+          this.cursor = new Cursor(this.question.x + this.question.width + 5, this.question.y);
+          this.input = new Input(this, rightEdge(this.question));
         }
     }
     if (this.cursor) {
-        if (this.input) {
-            this.cursor.update(rightEdge(this.input) + 5);
-        } else {
-            this.cursor.update(rightEdge(this.question));
-        }
+      if (this.input) {
+        this.cursor.update(rightEdge(this.input) + 5);
+      } else {
+        this.cursor.update(rightEdge(this.question));
+      }
     }
 }
 Game.prototype.draw = function () {
   this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
   this.bg.draw(this.context);
   this.question.draw(this.context);
+  this.inventory.draw(this.context);
   if (this.cursor) {
     this.cursor.draw(this.context);
     this.input.draw(this.context);

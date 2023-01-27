@@ -1,0 +1,6 @@
+* Start out with no money but can go to the loan shark and have certain amount of time to pay off
+* Get market updates on selling prices in different locations
+* Cops can be after you, if make a bust on something then prices go up
+* MAKE OPTIONS DYNAMIC: gems, precious metals, toys, etc
+
+* Sell and buy items

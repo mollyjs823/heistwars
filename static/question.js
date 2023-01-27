@@ -1,4 +1,5 @@
 import OptionsMap from "./optionsMap.js";
+import Location from "./location.js";
 
 export default class Question {
     constructor(c) {
@@ -6,7 +7,7 @@ export default class Question {
       this.y = c.context.hUnit * 2;
       this.color = '#70d9ff';
       this.question = "What would you like to do?";
-      this.map = new OptionsMap();
+      this.map = new OptionsMap(c);
       this.options = this.map.options
       this.selected = this.options[0];
       this.height = 16;
@@ -14,6 +15,7 @@ export default class Question {
 
       this.resetting = false;
       this.transaction = false;
+      this.location = new Location(c);
     }
 
     moveUp() {
@@ -33,6 +35,7 @@ export default class Question {
     }
   
     draw(c) {
+      this.location.draw(c);
       c.font = "12px Consolas";
       c.fillStyle = this.color;
       c.fillText(this.question, this.x, this.y);
@@ -52,15 +55,15 @@ export default class Question {
     update(c=null, num=null) {
       if (this.resetting) {
         this.resetting = false;
+        this.location.update(this.selected);
         this.options = this.map.options;
       } else if (this.transaction) {
         this.transaction = false;
         this.question = 'How many?';
         this.width = c.measureText(this.question).width;
         this.options = [];
-        return true;  
+        return "transaction";  
       } else if (num) {
-        console.log(num);
         this.options = this.map.options;
         this.question = "What would you like to do?";
       } else {

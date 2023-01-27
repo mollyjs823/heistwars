@@ -13,7 +13,7 @@ export default class Background {
       // 1 2 3 4 5 6
 
       let wUnit = c.wUnit;
-      let hUnit = c.hUnit;
+      let hUnit = c.hUnit / 4;
 
       c.strokeStyle = this.colors['text'];
       c.lineWidth = 3;
@@ -31,19 +31,16 @@ export default class Background {
       c.closePath();
 
       c.beginPath();
-      c.strokeRect(this.x, this.y + hUnit, wUnit * 3, 150);
+      c.strokeRect(this.x, this.y + hUnit, wUnit * 3, hUnit * 6);
       c.closePath();
 
       c.beginPath();
-      c.strokeRect(this.x + wUnit * 3, this.y + hUnit, wUnit * 3, 150);
+      c.strokeRect(this.x + wUnit * 3, this.y + hUnit, wUnit * 3, hUnit * 6);
       c.closePath();
 
       c.fillStyle = this.colors['text'];
-      c.font = "12px Consolas";
-      c.fillText("Warehouse", this.x + 15, 53);
-      c.fillText("Briefcase", this.x + 15 + wUnit * 4, 53);
-    }
-  
-    update() {
+      c.font = "16px Consolas";
+      c.fillText("Warehouse", this.x + 15, 62);
+      c.fillText("Briefcase", this.x + 15 + wUnit * 4, 62);
     }
   }
